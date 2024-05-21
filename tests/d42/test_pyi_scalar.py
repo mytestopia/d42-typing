@@ -3,11 +3,6 @@ import pytest
 import app.modules as modules
 from app.helpers import load_module_from_string
 
-"""
-Не покрыт:
- - uuid4
-"""
-
 
 @pytest.mark.parametrize('schema, schema_type', [
     ('schema.str', 'StrSchema'),

@@ -35,15 +35,15 @@ def fake_none_overload(type_schema: str):
     )
 
 
-def fake_scalar_overload(type_schema: str, type_: str):
+def fake_scalar_overload(input_type: str, output_type: str):
     """
     Возвращает метод перегрузки для скалярных типов:
     @overload
-    def fake(schema: IntSchema) -> int: pass
+    def fake(schema: <input_type>) -> <output_type>: pass
     """
     return _fake_overload(
-        annotation=ast.Name(id=type_schema),
-        returns=ast.Name(id=type_.__name__),
+        annotation=ast.Name(id=input_type),
+        returns=ast.Name(id=output_type.__name__),
     )
 
 
@@ -66,7 +66,7 @@ def fake_list_overload(schema_name: str, item_type: str):
     """
     Возвращает метод перегрузки для сложных типов:
     @overload
-    def fake(schema: Type[NameSchema]) -> list[str]
+    def fake(schema: Type[NameSchema]) -> List[str]
     """
     return _fake_overload(
         annotation=ast.Subscript(
@@ -74,7 +74,7 @@ def fake_list_overload(schema_name: str, item_type: str):
             slice=ast.Name(id=schema_name),
         ),
         returns=ast.Subscript(
-            value=ast.Name(id='list'),
+            value=ast.Name(id='List'),
             slice=ast.Name(id=item_type)
         )
     )

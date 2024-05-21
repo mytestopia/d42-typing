@@ -13,10 +13,11 @@ TestSchema: DictSchema\
 
 CODE_BLAHBLAH = '''\
 from typing import overload
+from typing import Dict
 from district42.types import DictSchema
 
 @overload
-def fake(schema: DictSchema) -> dict:
+def fake(schema: DictSchema) -> Dict:
     pass\
 '''
 

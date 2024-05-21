@@ -1,7 +1,5 @@
 import sys
 
-import pytest
-
 import app.modules as modules
 from app.helpers import load_module_from_string
 from tests.custom_text_schema._text_schema import TEXT_SCHEMA_CODE
@@ -30,7 +28,8 @@ def fake(schema: StrSchema) -> str:
 '''
 
 
-class ScalarTextSchemaTestClass:
+class TestClassTextSchema:
+
     def setup_method(self):
         entity_module = load_module_from_string('test_entity', TEXT_SCHEMA_CODE)
         sys.modules['custom'] = entity_module
@@ -38,7 +37,7 @@ class ScalarTextSchemaTestClass:
     def teardown_method(self):
         sys.modules.pop('custom')
 
-    def test_text_schema_scalar_pyi(self):
+    def test_text_schema_pyi(self):
         module = load_module_from_string('test_scalar', CODE)
         schema_value = getattr(module, SCHEMA_NAME)
 
@@ -47,8 +46,7 @@ class ScalarTextSchemaTestClass:
 
         assert typed_module.get_printable_content() == CODE_PYI
 
-    @pytest.mark.skip('StrSchema некорректно импортируется из test_entity')
-    def test_text_schema_scalar_pyi_blahblah(self):
+    def test_text_schema_pyi_blahblah(self):
         module = load_module_from_string('test.module', CODE)
         schema_value = getattr(module, SCHEMA_NAME)
 

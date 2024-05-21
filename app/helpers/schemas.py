@@ -11,6 +11,8 @@ def is_schema_type_simple(schema_value: typing.Any) -> bool:
     return (
             schema_value.type is None
             or schema_value.type is typing.Any
+            or schema_value.type is typing.Dict
+            or schema_value.type is typing.List
             or is_builtin_class_instance(schema_value.type)
     )
 

@@ -1,6 +1,9 @@
 import argparse
 import ast
 import inspect
+import os
+import sys
+
 
 import app.modules as modules
 from app.helpers import get_module_variables, import_module, walk
@@ -20,7 +23,11 @@ def main():
 
     path = args_dict['path_to_schemas']
 
+    cwd = os.getcwd()
+    sys.path.append(cwd)
+
     for file_name in walk(path):
+        print(f'creating types for: {file_name}')
         module = import_module(path, file_name)
         module_source = inspect.getsource(module)
         module_ast = ast.parse(module_source)
@@ -38,5 +45,6 @@ def main():
 
     blahblah_module.print()
 
+    sys.path.remove(cwd)
 
 main()

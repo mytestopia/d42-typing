@@ -31,7 +31,7 @@ from typing import TypedDict
 from district42.types import IntSchema
 from district42.types import BoolSchema
 
-class _NestedTestSchema_EntitySchema(type):
+class _D42MetaNestedTestSchema_EntitySchema(type):
 
     @overload
     def __getitem__(cls, arg: Literal['is_deleted']) -> BoolSchema:
@@ -41,13 +41,13 @@ class _NestedTestSchema_EntitySchema(type):
     def __getitem__(cls, arg: Literal['updated_at']) -> IntSchema:
         pass
 
-class NestedTestSchema_EntitySchema(metaclass=_NestedTestSchema_EntitySchema):
+class NestedTestSchema_EntitySchema(metaclass=_D42MetaNestedTestSchema_EntitySchema):
 
     class type(TypedDict, total=False):
         is_deleted: BoolSchema.type
         updated_at: IntSchema.type
 
-class _NestedTestSchema(type):
+class _D42MetaNestedTestSchema(type):
 
     @overload
     def __getitem__(cls, arg: Literal['id']) -> IntSchema:
@@ -57,7 +57,7 @@ class _NestedTestSchema(type):
     def __getitem__(cls, arg: Literal['entity']) -> NestedTestSchema_EntitySchema:
         pass
 
-class NestedTestSchema(metaclass=_NestedTestSchema):
+class NestedTestSchema(metaclass=_D42MetaNestedTestSchema):
 
     class type(TypedDict, total=False):
         id: IntSchema.type

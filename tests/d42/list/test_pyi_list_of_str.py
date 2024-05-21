@@ -18,11 +18,12 @@ class TestSchema:
 
 BLAHBLAH_PYI = '''\
 from typing import overload
+from typing import List
 from test.module import TestSchema
 from typing import Type
 
 @overload
-def fake(schema: Type[TestSchema]) -> list[str]:
+def fake(schema: Type[TestSchema]) -> List[str]:
     pass\
 '''
 

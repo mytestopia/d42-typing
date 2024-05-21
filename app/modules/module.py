@@ -34,10 +34,14 @@ class Module:
     def get_ast_content(self) -> list:
         return []
 
-    def get_printable_content(self) -> str:
+    def get_printable_content(self) -> str | None:
         module = ast.Module(body=self.get_ast_content(), type_ignores=[])
+        if module.body is None:
+            return None
         return ast.unparse(ast.fix_missing_locations(module))  # Python 3.9+
 
     def print(self):
-        with open(f"{self.path}i", "w") as f:
-            f.write(self.get_printable_content())
+        content = self.get_printable_content()
+        if content is not None:
+            with open(f"{self.path}i", "w") as f:
+                f.write(content)

@@ -15,10 +15,11 @@ TestSchema: ListSchema\
 
 BLAHBLAH_PYI = '''\
 from typing import overload
+from typing import List
 from district42.types import ListSchema
 
 @overload
-def fake(schema: ListSchema) -> list:
+def fake(schema: ListSchema) -> List:
     pass\
 '''
 

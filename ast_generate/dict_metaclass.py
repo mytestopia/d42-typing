@@ -1,7 +1,8 @@
 import ast
+from typing import Any
 
 
-def getitem_method(key_name: str, type_schema: str):
+def getitem_method(key_name: str, type_schema: Any):
     """
     Возвращает ast-метод, используемый в мета-классе для типизации словаря:
     @overload
@@ -30,14 +31,15 @@ def getitem_method(key_name: str, type_schema: str):
         ],
         body=[ast.Pass()],
         decorator_list=[ast.Name(id='overload')],
-        returns=ast.Name(id=str(type_schema)),
+        # FIXME для вложенных словорей type_schema строка, для остальных - объект
+        returns=ast.Name(id=str(type_schema.__name__) if hasattr(type_schema, '__name__') else type_schema),
     )
 
 
-def dict_metaclass(name: str, typing_map: dict[str, str]):
+def dict_metaclass(name: str, typing_map: dict[str, Any]):
     """Возвращает ast-класс, используемый в мета-классе для типизации словаря"""
     return ast.ClassDef(
-        name=f"_{name}",  # gen_unique_name
+        name=f"{name}",  # gen_unique_name
         bases=[ast.Name(id="type")],
         body=[getitem_method(key, value) for key, value in typing_map.items()],
         keywords=[],

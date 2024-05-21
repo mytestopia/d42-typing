@@ -1,5 +1,5 @@
 import typing
-
+from d42.custom_type import Schema
 from niltype import Nil
 
 import ast_generate
@@ -12,14 +12,16 @@ class TypedModule(Module):
     def _add_typing(self, item):
         self.typed_items.append(item)
 
-    def get_ast_content(self) -> list[str]:
-        return [import_.to_ast() for import_ in self.imports] + self.typed_items
+    def get_ast_content(self) -> list[str] | None:
+        imports = [import_.to_ast() for import_ in self.imports]
+        items = self.typed_items
+        if items:
+            return imports + items
+        return None
 
     def _generate_typing_DictSchema(self, dict_name: str, dict_value):
         typing_map = {}
         # todo для nested dict типизация присутствует дважды
-        # if name == 'NestedNestedDictsSchema':
-        #     pass
 
         # схема словаря без ключей (schema.dict)
         if dict_value.props.keys is Nil:
@@ -29,24 +31,25 @@ class TypedModule(Module):
         self.add_import('typing', 'overload', 'Literal', 'TypedDict')
         for key, item_value in dict_value.props.keys.items():
             value_schema, _ = item_value
-            value_type = value_schema.__class__.__name__
+            value_type = value_schema.__class__
 
-            if value_type == 'DictSchema':
+            if value_type.__name__ == 'DictSchema':
                 nested_dict_schema_name = f'{dict_name}_{key.capitalize()}Schema'
                 self._generate_typing_DictSchema(nested_dict_schema_name, value_schema)
                 typing_map[key] = nested_dict_schema_name
 
-            elif not is_builtin_class_instance(value_schema.type):
-                value_type = value_schema.type.__name__
-                self.add_import(get_module_to_import_from(dict_value), value_type)
+            elif value_schema.type is not None and not is_builtin_class_instance(value_schema.type):
+                value_type = value_schema.type
+                self.add_import(get_module_to_import_from(value_schema.type), value_type.__name__)
                 typing_map[key] = value_type
 
             else:
-                self.add_import(get_module_to_import_from(dict_value), value_type)
+                self.add_import(get_module_to_import_from(value_schema), value_type.__name__)
                 typing_map[key] = value_type
 
-        self._add_typing(ast_generate.dict_metaclass(dict_name, typing_map))
-        self._add_typing(ast_generate.dict_typeclass(dict_name, typing_map))
+        meta_class_name = f'_D42Meta{dict_name}'
+        self._add_typing(ast_generate.dict_metaclass(meta_class_name, typing_map))
+        self._add_typing(ast_generate.dict_typeclass(dict_name, meta_class_name, typing_map))
 
     def _generate_typing_ListSchema(self, list_name: str, list_value):
         if list_value.props.type is not Nil:
@@ -89,14 +92,13 @@ class TypedModule(Module):
         elif schema_type_name == 'ListSchema':
             self._generate_typing_ListSchema(schema_name, schema_value)
 
-        elif schema_type_name in (
-                'StrSchema', 'BoolSchema', 'IntSchema', 'FloatSchema', 'NoneSchema',
-                'NumericSchema',
-                'DateTimeSchema', 'BytesSchema', 'UUID4Schema'
-        ):
+        else:
             self._generate_scalar_typing(schema_name, schema_type_name, schema_value)
 
     def generate(self, schema_name: str, schema_value: typing.Any):
+        if not isinstance(schema_value, Schema):
+            return
+
         if is_schema_type_simple(schema_value):
             schema_type_name = schema_value.__class__.__name__
             self._generate_builtin_type(schema_name, schema_type_name, schema_value)

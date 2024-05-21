@@ -1,4 +1,5 @@
 import typing
+from d42.custom_type import Schema
 
 from niltype import Nil
 
@@ -27,12 +28,12 @@ class BlahBlahModule(Module):
         if method not in self.overloaded_fakes:
             self.overloaded_fakes.append(method)
 
-    def get_ast_content(self) -> list:
-        return [
-            import_.to_ast() for import_ in self.imports
-        ] + [
-            fake.ast_method for fake in self.overloaded_fakes
-        ]
+    def get_ast_content(self) -> list | None:
+        imports = [import_.to_ast() for import_ in self.imports]
+        methods = [fake.ast_method for fake in self.overloaded_fakes]
+        if methods:
+            return imports + methods
+        return None
 
     def _generate_scalar_overload(self, input_type, output_type, schema_value):
         """Добавляет fake(schema: <input_type>) -> <output_type>"""
@@ -52,7 +53,9 @@ class BlahBlahModule(Module):
         )
 
     def _generate_overload_DictSchema(self, path_to_schema, schema_name, schema_value):
+        # для пустого словаря
         if schema_value.props.keys is Nil:
+            self.add_import('typing', 'Dict')
             self._generate_scalar_overload(schema_value.__class__.__name__, schema_value.__class__.type, schema_value)
             return
 
@@ -65,6 +68,7 @@ class BlahBlahModule(Module):
         )
 
     def _generate_overload_ListSchema(self, path_to_schema, schema_name, schema_value):
+        self.add_import('typing', 'List')
         if schema_value.props.type is not Nil:
             list_item_type = schema_value.props.type.type
             list_item_type_name = list_item_type.__name__
@@ -93,6 +97,14 @@ class BlahBlahModule(Module):
         self.add_import('typing', 'Any')
         self._generate_scalar_overload('AnySchema', any_value.__class__.type, any_value)
 
+    def _generate_overload_untyped_schema(self, schema_type_name, schema_value):
+        self.add_import('typing', 'Any')
+        self.add_import(get_module_to_import_from(schema_value), schema_type_name)
+        self._add_overload(
+            typing.Any,
+            ast_generate.fake_scalar_overload(schema_type_name, typing.Any)
+        )
+
     def _generate_builtin_type(self, schema_name, schema_type_name, file_name, schema_value):
 
         if schema_type_name == 'DictSchema':
@@ -110,13 +122,24 @@ class BlahBlahModule(Module):
         elif schema_type_name == 'ListSchema':
             self._generate_overload_ListSchema(file_name, schema_name, schema_value)
 
+        elif schema_value.type is typing.Any:
+            self._generate_overload_untyped_schema(schema_type_name, schema_value)
+
         else:
             self._generate_scalar_overload(schema_type_name, schema_value.__class__.type, schema_value)
 
     def generate(self, file_name, schema_name, schema_value):
+        if not isinstance(schema_value, Schema):
+            return
+
         # для NoneSchema нельзя метод is_builtin_class_instance падает с исключением
-        if (schema_value.type is None or schema_value.type is typing.Any or
-                is_builtin_class_instance(schema_value.type)):
+        if (
+                schema_value.type is None or
+                schema_value.type is typing.Any or
+                schema_value.type is typing.Dict or
+                schema_value.type is typing.List or
+                is_builtin_class_instance(schema_value.type)
+        ):
 
             schema_type_name = schema_value.__class__.__name__
             self._generate_builtin_type(schema_name, schema_type_name, file_name, schema_value)
@@ -126,4 +149,4 @@ class BlahBlahModule(Module):
         self._generate_scalar_overload(
             input_type=schema_type_name,
             output_type=schema_value.type.type,
-            schema_value=schema_value)
+            schema_value=schema_value.type)
