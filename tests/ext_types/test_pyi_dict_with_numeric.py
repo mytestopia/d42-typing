@@ -30,6 +30,12 @@ class _D42MetaTestDictNumericSchema(type):
     def __getitem__(cls, arg: Literal['first_name']) -> StrSchema:
         pass
 
+    def __mod__(self, other):
+        pass
+
+    def __add__(self, other):
+        pass
+
 class TestDictNumericSchema(metaclass=_D42MetaTestDictNumericSchema):
 
     class type(TypedDict, total=False):

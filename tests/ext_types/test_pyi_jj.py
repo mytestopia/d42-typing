@@ -36,6 +36,12 @@ class _D42MetaTestHistorySchema(type):
     def __getitem__(cls, arg: Literal['created_at']) -> DateTimeSchema:
         pass
 
+    def __mod__(self, other):
+        pass
+
+    def __add__(self, other):
+        pass
+
 class TestHistorySchema(metaclass=_D42MetaTestHistorySchema):
 
     class type(TypedDict, total=False):

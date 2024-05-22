@@ -4,7 +4,7 @@ from d42.custom_type import Schema
 from niltype import Nil
 
 import ast_generate
-from app.helpers import get_module_to_import_from, is_builtin_class_instance
+from app.helpers import get_module_to_import_from, is_schema_type_simple
 from app.modules.module import Module
 
 
@@ -132,15 +132,16 @@ class BlahBlahModule(Module):
         if not isinstance(schema_value, Schema):
             return
 
-        # для NoneSchema нельзя метод is_builtin_class_instance падает с исключением
-        if (
-                schema_value.type is None or
-                schema_value.type is typing.Any or
-                schema_value.type is typing.Dict or
-                schema_value.type is typing.List or
-                is_builtin_class_instance(schema_value.type)
-        ):
+        if schema_name.startswith('_'):
+            return
 
+        # для кастомных схем, у которых не прописан тип:
+        if schema_value.type is typing.Any and schema_value.__class__.__name__.startswith('_'):
+            self._generate_overload_untyped_schema(schema_name, schema_value)
+            return
+
+        # для NoneSchema нельзя метод is_builtin_class_instance падает с исключением
+        if is_schema_type_simple(schema_value):
             schema_type_name = schema_value.__class__.__name__
             self._generate_builtin_type(schema_name, schema_type_name, file_name, schema_value)
             return

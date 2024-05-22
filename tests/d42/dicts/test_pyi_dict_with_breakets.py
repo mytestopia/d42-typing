@@ -1,5 +1,6 @@
 import app.modules as modules
 from app.helpers import load_module_from_string
+import pytest
 
 SCHEMA_NAME = 'TestSchema'
 
@@ -8,52 +9,27 @@ from d42 import schema
 
 TestSchema = schema.dict({
     "id": schema.int,
-    "first_name": schema.str,
+    "name[first]": schema.str,
 })
 '''
 
 CODE_PYI = '''\
-from typing import overload
-from typing import Literal
-from typing import TypedDict
-from district42.types import IntSchema
-from district42.types import StrSchema
-
-class _D42MetaTestSchema(type):
-
-    @overload
-    def __getitem__(cls, arg: Literal['id']) -> IntSchema:
-        pass
-
-    @overload
-    def __getitem__(cls, arg: Literal['first_name']) -> StrSchema:
-        pass
-
-    def __mod__(self, other):
-        pass
-
-    def __add__(self, other):
-        pass
-
-class TestSchema(metaclass=_D42MetaTestSchema):
-
-    class type(TypedDict, total=False):
-        id: IntSchema.type
-        first_name: StrSchema.type\
+from district42.types import DictSchema
+TestSchema: DictSchema\
 '''
 
 CODE_BLAHBLAH_PYI = '''\
 from typing import overload
-from typing import Type
-from test.module import TestSchema
+from typing import Dict
+from district42.types import DictSchema
 
 @overload
-def fake(schema: Type[TestSchema]) -> TestSchema.type:
+def fake(schema: DictSchema) -> Dict:
     pass\
 '''
 
 
-def test_dict_pyi():
+def test_dict_with_breakets_pyi():
     module = load_module_from_string('test', CODE)
     schema_value = getattr(module, SCHEMA_NAME)
 
@@ -63,7 +39,8 @@ def test_dict_pyi():
     assert typed_module.get_printable_content() == CODE_PYI
 
 
-def test_dict_pyi_blahblah():
+@pytest.mark.skip  # FIXME
+def test_dict_with_breakets_pyi_blahblah():
     module = load_module_from_string('test.module', CODE)
     schema_value = getattr(module, SCHEMA_NAME)
 

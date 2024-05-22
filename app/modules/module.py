@@ -1,4 +1,5 @@
 import ast
+import logging
 
 
 class Import:
@@ -24,11 +25,24 @@ class Module:
         self.imports = []
         self.typed_items = []
 
+    def no_import_duplicates(self, import_: Import) -> bool:
+        return import_ not in self.imports
+
+    def duplicate_in_module(self, import_: Import):
+        if import_.item in [i.item for i in self.imports]:
+            return import_.module
+        return None
+
     def add_import(self, module, *imported_items):
         # todo squash imports
         for item in imported_items:
             new_import = Import(module, item)
-            if new_import not in self.imports:
+            if self.no_import_duplicates(new_import):
+
+                duplicate_module = self.duplicate_in_module(new_import)
+                if duplicate_module:
+                    logging.warning(f'Item {new_import.item} has already imported from module {duplicate_module}')
+
                 self.imports.append(new_import)
 
     def get_ast_content(self) -> list:

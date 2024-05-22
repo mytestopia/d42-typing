@@ -41,6 +41,12 @@ class _D42MetaNestedTestSchema_EntitySchema(type):
     def __getitem__(cls, arg: Literal['updated_at']) -> IntSchema:
         pass
 
+    def __mod__(self, other):
+        pass
+
+    def __add__(self, other):
+        pass
+
 class NestedTestSchema_EntitySchema(metaclass=_D42MetaNestedTestSchema_EntitySchema):
 
     class type(TypedDict, total=False):
@@ -55,6 +61,12 @@ class _D42MetaNestedTestSchema(type):
 
     @overload
     def __getitem__(cls, arg: Literal['entity']) -> NestedTestSchema_EntitySchema:
+        pass
+
+    def __mod__(self, other):
+        pass
+
+    def __add__(self, other):
         pass
 
 class NestedTestSchema(metaclass=_D42MetaNestedTestSchema):

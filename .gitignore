@@ -37,6 +37,7 @@ cython_debug/
 #.idea/
 
 *.pyi
+*.pyc
 _tests
 .idea
 __pychache__

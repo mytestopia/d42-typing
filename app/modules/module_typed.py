@@ -23,8 +23,18 @@ class TypedModule(Module):
         typing_map = {}
         # todo для nested dict типизация присутствует дважды
 
+        def has_invalid_key(dictionary: dict) -> bool:
+            # TODO очень костыльная проверка, нужен метод в общем виде
+            for key in dictionary.keys():
+                if '[' in key:
+                    return True
+            return False
+
         # схема словаря без ключей (schema.dict)
-        if dict_value.props.keys is Nil:
+        if (
+                dict_value.props.keys is Nil
+                or has_invalid_key(dict_value.props.keys)
+        ):
             self._generate_scalar_typing(dict_name, dict_value.__class__.__name__, dict_value)
             return
 
@@ -65,7 +75,7 @@ class TypedModule(Module):
         self._generate_scalar_typing(list_name, 'ListSchema', list_value)
 
     def _generate_typing_AnySchema(self, any_name: str, any_value):
-        if any_value.props.types is not Nil:
+        if hasattr(any_value.props, 'types') and any_value.props.types is not Nil:
             types_set = set(type.type for type in any_value.props.types)
 
             if len(types_set) == 1:
@@ -97,6 +107,12 @@ class TypedModule(Module):
 
     def generate(self, schema_name: str, schema_value: typing.Any):
         if not isinstance(schema_value, Schema):
+            return
+
+        # для кастомных схем, у которых не прописан тип:
+        if schema_value.type is typing.Any and schema_value.__class__.__name__.startswith('_'):
+            self.add_import('district42.types', 'AnySchema')
+            self._add_typing(ast_generate.annotated_assign(schema_name, 'AnySchema'))
             return
 
         if is_schema_type_simple(schema_value):
