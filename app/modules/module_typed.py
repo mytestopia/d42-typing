@@ -1,9 +1,17 @@
 import typing
+
 from d42.custom_type import Schema
 from niltype import Nil
 
 import ast_generate
-from app.helpers import get_module_to_import_from, is_builtin_class_instance, is_schema_type_simple
+from app.helpers import (
+    get_module_to_import_from,
+    has_invalid_key,
+    is_builtin_class_instance,
+    is_dict_empty,
+    is_dict_without_keys,
+    is_schema_type_simple,
+)
 
 from .module import Module
 
@@ -19,23 +27,19 @@ class TypedModule(Module):
             return imports + items
         return None
 
+    def _generate_typing_empty_dict(self, dict_name, dict_value):
+        return self._generate_scalar_typing(dict_name, dict_value.__class__.__name__, dict_value)
+
     def _generate_typing_DictSchema(self, dict_name: str, dict_value):
         typing_map = {}
         # todo для nested dict типизация присутствует дважды
 
-        def has_invalid_key(dictionary: dict) -> bool:
-            # TODO очень костыльная проверка, нужен метод в общем виде
-            for key in dictionary.keys():
-                if '[' in key:
-                    return True
-            return False
-
-        # схема словаря без ключей (schema.dict)
         if (
-                dict_value.props.keys is Nil
+                is_dict_without_keys(dict_value)
+                or is_dict_empty(dict_value)
                 or has_invalid_key(dict_value.props.keys)
         ):
-            self._generate_scalar_typing(dict_name, dict_value.__class__.__name__, dict_value)
+            self._generate_typing_empty_dict(dict_name, dict_value)
             return
 
         self.add_import('typing', 'overload', 'Literal', 'TypedDict')

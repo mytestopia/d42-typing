@@ -1,10 +1,10 @@
 import typing
-from d42.custom_type import Schema
 
+from d42.custom_type import Schema
 from niltype import Nil
 
 import ast_generate
-from app.helpers import get_module_to_import_from, is_schema_type_simple
+from app.helpers import get_module_to_import_from, is_schema_type_simple, is_dict_empty, is_dict_without_keys
 from app.modules.module import Module
 
 
@@ -53,8 +53,7 @@ class BlahBlahModule(Module):
         )
 
     def _generate_overload_DictSchema(self, path_to_schema, schema_name, schema_value):
-        # для пустого словаря
-        if schema_value.props.keys is Nil:
+        if is_dict_empty(schema_value) or is_dict_without_keys(schema_value):
             self.add_import('typing', 'Dict')
             self._generate_scalar_overload(schema_value.__class__.__name__, schema_value.__class__.type, schema_value)
             return

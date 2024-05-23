@@ -1,7 +1,6 @@
 import app.modules as modules
 from app.helpers import load_module_from_string
 
-
 NAME = 'TestUUID4Schema'
 
 CODE = '''\

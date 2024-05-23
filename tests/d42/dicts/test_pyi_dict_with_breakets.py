@@ -1,6 +1,7 @@
+import pytest
+
 import app.modules as modules
 from app.helpers import load_module_from_string
-import pytest
 
 SCHEMA_NAME = 'TestSchema'
 
@@ -20,11 +21,11 @@ TestSchema: DictSchema\
 
 CODE_BLAHBLAH_PYI = '''\
 from typing import overload
-from typing import Dict
-from district42.types import DictSchema
+from typing import Type
+from test.module import TestSchema
 
 @overload
-def fake(schema: DictSchema) -> Dict:
+def fake(schema: Type[TestSchema]) -> TestSchema.type:
     pass\
 '''
 
@@ -39,7 +40,6 @@ def test_dict_with_breakets_pyi():
     assert typed_module.get_printable_content() == CODE_PYI
 
 
-@pytest.mark.skip  # FIXME
 def test_dict_with_breakets_pyi_blahblah():
     module = load_module_from_string('test.module', CODE)
     schema_value = getattr(module, SCHEMA_NAME)

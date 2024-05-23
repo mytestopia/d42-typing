@@ -1,10 +1,9 @@
 import argparse
 import ast
 import inspect
+import logging
 import os
 import sys
-import logging
-
 
 import app.modules as modules
 from app.helpers import get_module_variables, import_module, walk
