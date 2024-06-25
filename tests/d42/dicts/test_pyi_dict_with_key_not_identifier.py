@@ -1,17 +1,11 @@
-import pytest
-
 import app.modules as modules
 from app.helpers import load_module_from_string
 
-SCHEMA_NAME = 'TestSchema'
-
 CODE = '''\
 from d42 import schema
-
 TestSchema = schema.dict({
-    "id": schema.int,
-    "name[first]": schema.str,
-})
+    '100x100': schema.str   
+})\
 '''
 
 CODE_PYI = '''\
@@ -19,7 +13,7 @@ from district42.types import DictSchema
 TestSchema: DictSchema\
 '''
 
-CODE_BLAHBLAH_PYI = '''\
+CODE_BLAHBLAH = '''\
 from typing import overload
 from typing import Dict
 from district42.types import DictSchema
@@ -30,21 +24,25 @@ def fake(schema: DictSchema) -> Dict:
 '''
 
 
-def test_dict_with_breakets_pyi():
-    module = load_module_from_string('test', CODE)
-    schema_value = getattr(module, SCHEMA_NAME)
+def test_dict_key_not_identifier_pyi():
+    module = load_module_from_string('test_scalar', CODE)
+
+    schema_name = 'TestSchema'
+    schema_description = getattr(module, schema_name)
 
     typed_module = modules.TypedModule('file_name')
-    typed_module.generate(SCHEMA_NAME, schema_value)
+    typed_module.generate(schema_name, schema_description)
 
     assert typed_module.get_printable_content() == CODE_PYI
 
 
-def test_dict_with_breakets_pyi_blahblah():
+def test_dict_key_not_identifier_blahblah_pyi():
     module = load_module_from_string('test.module', CODE)
-    schema_value = getattr(module, SCHEMA_NAME)
+
+    schema_name = 'TestSchema'
+    schema_description = getattr(module, schema_name)
 
     blahblha_module = modules.BlahBlahModule()
-    blahblha_module.generate('test.module', SCHEMA_NAME, schema_value)
+    blahblha_module.generate('test.module', schema_name, schema_description)
 
-    assert blahblha_module.get_printable_content() == CODE_BLAHBLAH_PYI
+    assert blahblha_module.get_printable_content() == CODE_BLAHBLAH

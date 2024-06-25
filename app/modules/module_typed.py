@@ -1,5 +1,5 @@
 import typing
-
+from d42.custom_type import CustomSchema
 from d42.custom_type import Schema
 from niltype import Nil
 
@@ -48,11 +48,20 @@ class TypedModule(Module):
             value_type = value_schema.__class__
 
             if value_type.__name__ == 'DictSchema':
-                nested_dict_schema_name = f'{dict_name}_{key.capitalize()}Schema'
-                self._generate_typing_DictSchema(nested_dict_schema_name, value_schema)
-                typing_map[key] = nested_dict_schema_name
+                if (
+                        is_dict_without_keys(value_schema)
+                        or is_dict_empty(value_schema)
+                        or has_invalid_key(value_schema.props.keys)
+                ):
+                    self.add_import('typing', 'Dict')
+                    typing_map[key] = value_schema.type
+                else:
+                    nested_dict_schema_name = f'{dict_name}_{key.capitalize()}Schema'
+                    self._generate_typing_DictSchema(nested_dict_schema_name, value_schema)
+                    typing_map[key] = nested_dict_schema_name
 
-            elif value_schema.type is not None and not is_builtin_class_instance(value_schema.type):
+            elif value_schema.type is not None and not is_builtin_class_instance(
+                    value_schema.type):
                 value_type = value_schema.type
                 self.add_import(get_module_to_import_from(value_schema.type), value_type.__name__)
                 typing_map[key] = value_type
@@ -91,7 +100,8 @@ class TypedModule(Module):
         self.add_import('district42.types', 'AnySchema')
         self._generate_scalar_typing(any_name, 'AnySchema', any_value)
 
-    def _generate_scalar_typing(self, schema_name: str, schema_type: str, schema_value: typing.Any):
+    def _generate_scalar_typing(self, schema_name: str, schema_type: str,
+                                schema_value: typing.Any):
         self.add_import(get_module_to_import_from(schema_value), schema_type)
         self._add_typing(ast_generate.annotated_assign(schema_name, schema_type))
 
@@ -112,11 +122,12 @@ class TypedModule(Module):
     def generate(self, schema_name: str, schema_value: typing.Any):
         if not isinstance(schema_value, Schema):
             return
-
         # для кастомных схем, у которых не прописан тип:
-        if schema_value.type is typing.Any and schema_value.__class__.__name__.startswith('_'):
-            self.add_import('district42.types', 'AnySchema')
-            self._add_typing(ast_generate.annotated_assign(schema_name, 'AnySchema'))
+        if (
+                issubclass(schema_value.__class__, CustomSchema)
+                and (hasattr(schema_value, 'type') is False
+                     or schema_value.type is typing.Any)
+        ):
             return
 
         if is_schema_type_simple(schema_value):

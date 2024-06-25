@@ -4,19 +4,13 @@ from tests.custom_schema_without_type._image_schema import IMAGE_SCHEMA_CODE
 
 SCHEMA_NAME = 'ImageSchema'
 
-
-CODE_PYI = '''\
-from district42.types import AnySchema
-ImageSchema: AnySchema\
-'''
-
 BLAHBLAH_PYI = '''\
 from typing import overload
 from typing import Any
-from test.module import ImageSchema
+from test.module import _ImageSchema
 
 @overload
-def fake(schema: ImageSchema) -> Any:
+def fake(schema: _ImageSchema) -> Any:
     pass\
 '''
 
@@ -28,7 +22,7 @@ def test_self_image_schema_pyi():
     typed_module = modules.TypedModule('file_name')
     typed_module.generate(SCHEMA_NAME, schema_value)
 
-    assert typed_module.get_printable_content() == CODE_PYI
+    assert typed_module.get_printable_content() == None
 
 
 def test_self_image_schema_pyi_blahblah():

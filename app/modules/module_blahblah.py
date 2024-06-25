@@ -1,10 +1,12 @@
 import typing
 
 from d42.custom_type import Schema
+from d42.custom_type import CustomSchema
 from niltype import Nil
 
 import ast_generate
-from app.helpers import get_module_to_import_from, is_schema_type_simple, is_dict_empty, is_dict_without_keys
+from app.helpers import get_module_to_import_from, is_schema_type_simple, is_dict_empty, \
+    is_dict_without_keys, has_invalid_key
 from app.modules.module import Module
 
 
@@ -53,9 +55,14 @@ class BlahBlahModule(Module):
         )
 
     def _generate_overload_DictSchema(self, path_to_schema, schema_name, schema_value):
-        if is_dict_empty(schema_value) or is_dict_without_keys(schema_value):
+        if (
+                is_dict_empty(schema_value)
+                or is_dict_without_keys(schema_value)
+                or has_invalid_key(schema_value.props.keys)
+        ):
             self.add_import('typing', 'Dict')
-            self._generate_scalar_overload(schema_value.__class__.__name__, schema_value.__class__.type, schema_value)
+            self._generate_scalar_overload(schema_value.__class__.__name__,
+                                           schema_value.__class__.type, schema_value)
             return
 
         self.add_import('typing', 'Type')
@@ -125,7 +132,8 @@ class BlahBlahModule(Module):
             self._generate_overload_untyped_schema(schema_type_name, schema_value)
 
         else:
-            self._generate_scalar_overload(schema_type_name, schema_value.__class__.type, schema_value)
+            self._generate_scalar_overload(schema_type_name, schema_value.__class__.type,
+                                           schema_value)
 
     def generate(self, file_name, schema_name, schema_value):
         if not isinstance(schema_value, Schema):
@@ -135,8 +143,12 @@ class BlahBlahModule(Module):
             return
 
         # для кастомных схем, у которых не прописан тип:
-        if schema_value.type is typing.Any and schema_value.__class__.__name__.startswith('_'):
-            self._generate_overload_untyped_schema(schema_name, schema_value)
+        if (
+                issubclass(schema_value.__class__, CustomSchema)
+                and (hasattr(schema_value, 'type') is False
+                     or schema_value.type is typing.Any)
+        ):
+            self._generate_overload_untyped_schema(schema_value.__class__.__name__, schema_value)
             return
 
         # для NoneSchema нельзя метод is_builtin_class_instance падает с исключением

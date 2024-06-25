@@ -43,3 +43,4 @@ def dict_typeclass(name: str, meta_name: str, typing_map: dict[str, str]):
         starargs=None,
         kwargs=None,
     )
+
