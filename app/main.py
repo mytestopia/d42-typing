@@ -10,8 +10,6 @@ from app.helpers import get_module_variables, import_module, walk
 
 
 def main():
-    blahblah_module = modules.BlahBlahModule()
-
     ap = argparse.ArgumentParser(description='')
 
     ap.add_argument('-p', '--path-to-schemas', nargs='?', type=str,
@@ -20,16 +18,28 @@ def main():
     ap.add_argument('-v', '--verbose',
                     help='increase output verbosity',
                     action='store_true')
+    ap.add_argument('-a', '--all',
+                    help='generate overloads for all standard schema types',
+                    action='store_true')
 
     args = ap.parse_args()
     log_level = logging.DEBUG if args.verbose else logging.INFO
     logging.basicConfig(level=log_level)
+
+    is_add_all = args.all
 
     cwd = os.getcwd()
     sys.path.append(cwd)
 
     file_count = 0
     schemas_count = 0
+
+    blahblah_module = modules.BlahBlahModule()
+
+    if is_add_all:
+        logging.debug(f'.. creating standard types overload')
+        blahblah_module.generate_standard_types()
+
     for file_name in walk(args.path_to_schemas):
         logging.debug(f'.. creating types for: {file_name}')
         module = import_module(args.path_to_schemas, file_name)

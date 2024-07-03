@@ -2,6 +2,7 @@ import typing
 
 from d42.custom_type import Schema
 from d42.custom_type import CustomSchema
+from d42 import schema
 from niltype import Nil
 
 import ast_generate
@@ -134,6 +135,27 @@ class BlahBlahModule(Module):
         else:
             self._generate_scalar_overload(schema_type_name, schema_value.__class__.type,
                                            schema_value)
+
+    def generate_standard_types(self):
+        for schema_value in [
+            schema.list,
+            schema.bool,
+            schema.str,
+            schema.int,
+            schema.any,
+            schema.dict,
+            schema.float,
+        ]:
+            self._generate_builtin_type(
+                file_name='no_file',
+                schema_name='no_name',
+                schema_type_name=schema_value.__class__.__name__,
+                schema_value=schema_value)
+        self._generate_builtin_type(
+            file_name='no_file',
+            schema_name='no_name',
+            schema_type_name='Schema',
+            schema_value=Schema)
 
     def generate(self, file_name, schema_name, schema_value):
         if not isinstance(schema_value, Schema):
