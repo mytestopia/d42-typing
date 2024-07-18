@@ -6,7 +6,7 @@ import os
 import sys
 
 import app.modules as modules
-from app.helpers import get_module_variables, import_module, walk
+from app.helpers import get_module_variables, import_module, walk, get_module_imports
 
 
 def main():
@@ -37,7 +37,7 @@ def main():
     blahblah_module = modules.BlahBlahModule()
 
     if is_add_all:
-        logging.debug(f'.. creating standard types overload')
+        logging.debug('.. creating standard types overload')
         blahblah_module.generate_standard_types()
 
     for file_name in walk(args.path_to_schemas):
@@ -46,7 +46,9 @@ def main():
         module_source = inspect.getsource(module)
         module_ast = ast.parse(module_source)
 
-        typed_module = modules.TypedModule(file_name)
+        imports = get_module_imports(module_ast)
+        logging.debug(f'.. saved imports {len(imports)} for moving to .pyi stub')
+        typed_module = modules.TypedModule(file_name, imports)
 
         for name in get_module_variables(module_ast):
             value = getattr(module, name)

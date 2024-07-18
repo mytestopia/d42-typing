@@ -1,7 +1,6 @@
 import ast
 import importlib.util
 from types import ModuleType
-from typing import Dict, List
 
 
 def import_module(workdir_path: str, file_path: str) -> ModuleType:
@@ -12,31 +11,37 @@ def import_module(workdir_path: str, file_path: str) -> ModuleType:
     return module
 
 
-def get_module_imports(module_ast: ast.Module) -> Dict[str, Dict[str, str | None]]:
-    imports = {}
+def get_module_imports(module_ast: ast.Module) -> list[ast.ImportFrom]:
+    imports = []
     for node in module_ast.body:
         if not isinstance(node, ast.ImportFrom):
             continue
-        for name in node.names:
-            real_name = name.asname if name.asname else name.name
-            imports[real_name] = {
-                "name": name.name,
-                "module": node.module,
-                "alias": name.asname,
-            }
+        if (
+                node.module not in ['d42', 'district42', 'district42_exp_types']
+                and not node.module.startswith('d42.')
+                and not node.module.startswith('district42.')
+                and not node.module.startswith('district42_exp_types.')
+                and not node.module.startswith('schemas.')
+        ):
+            imports.append(node)
     return imports
 
 
-def get_module_variables(module_ast: ast.Module) -> List[str]:
+def get_module_variables(module_ast: ast.Module) -> list[str]:
     variables = []
+
+    def process_target(target: ast.expr):
+        assert isinstance(target, ast.Name)
+        if target.id.startswith("__"):
+            return
+        variables.append(target.id)
+
     for node in module_ast.body:
-        if not isinstance(node, ast.Assign):
-            continue
-        for target in node.targets:
-            assert isinstance(target, ast.Name)
-            if target.id.startswith("__"):
-                continue
-            variables.append(target.id)
+        if isinstance(node, ast.Assign):
+            for target in node.targets:
+                process_target(target)
+        elif isinstance(node, ast.AnnAssign):
+            process_target(node.target)
     return variables
 
 

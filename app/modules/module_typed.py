@@ -1,3 +1,4 @@
+import ast
 import typing
 from d42.custom_type import CustomSchema
 from d42.custom_type import Schema
@@ -12,16 +13,24 @@ from app.helpers import (
     is_dict_without_keys,
     is_schema_type_simple,
 )
+from ast_generate import annotated_assign
 
 from .module import Module
 
 
 class TypedModule(Module):
+
+    def __init__(self, path: str,
+                 origin_imports: typing.Optional[list[ast.ImportFrom]] = None):
+        super().__init__(path)
+        self.origin_imports = origin_imports or []
+
     def _add_typing(self, item):
         self.typed_items.append(item)
 
     def get_ast_content(self) -> list[str] | None:
         imports = [import_.to_ast() for import_ in self.imports]
+        imports += self.origin_imports
         items = self.typed_items
         if items:
             return imports + items
@@ -121,6 +130,8 @@ class TypedModule(Module):
 
     def generate(self, schema_name: str, schema_value: typing.Any):
         if not isinstance(schema_value, Schema):
+            if is_builtin_class_instance(type(schema_value)):
+                self._add_typing(annotated_assign(schema_name, type(schema_value).__name__))
             return
         # для кастомных схем, у которых не прописан тип:
         if (

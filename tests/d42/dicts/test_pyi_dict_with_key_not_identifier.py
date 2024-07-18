@@ -4,7 +4,7 @@ from app.helpers import load_module_from_string
 CODE = '''\
 from d42 import schema
 TestSchema = schema.dict({
-    '100x100': schema.str   
+    '100x100': schema.str
 })\
 '''
 

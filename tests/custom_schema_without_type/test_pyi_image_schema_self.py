@@ -22,7 +22,7 @@ def test_self_image_schema_pyi():
     typed_module = modules.TypedModule('file_name')
     typed_module.generate(SCHEMA_NAME, schema_value)
 
-    assert typed_module.get_printable_content() == None
+    assert typed_module.get_printable_content() is None
 
 
 def test_self_image_schema_pyi_blahblah():

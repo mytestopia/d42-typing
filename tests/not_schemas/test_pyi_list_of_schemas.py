@@ -9,6 +9,11 @@ TestSchema = [schema.str("string")]
 '''
 
 
+CODE_PYI = '''\
+TestSchema: list\
+'''
+
+
 def test_list_of_schemas_pyi():
     module = load_module_from_string('test', CODE)
     schema_description = getattr(module, SCHEMA_NAME)
@@ -16,7 +21,7 @@ def test_list_of_schemas_pyi():
     typed_module = modules.TypedModule('file_name')
     typed_module.generate(SCHEMA_NAME, schema_description)
 
-    assert typed_module.get_printable_content() is None
+    assert typed_module.get_printable_content() == CODE_PYI
 
 
 def test_list_of_schemas_pyi_blahblah():
