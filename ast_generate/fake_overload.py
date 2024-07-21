@@ -47,6 +47,30 @@ def fake_scalar_overload(input_type: str, output_type: str):
     )
 
 
+def fake_union_overload(type_schema: str, types_in_union):
+    """
+    Возвращает метод перегрузки для скалярных типов:
+    @overload
+    def fake(schema: type_schema) -> Union[...]: pass
+    """
+    def get_elt_2(type_: str | None) -> ast.Constant | ast.Name:
+        if type_ is None:
+            return ast.Constant(value=None)
+        return ast.Name(id=type_.__name__)
+
+    return _fake_overload(
+        annotation=ast.Name(id=type_schema),
+        returns=ast.Subscript(
+            value=ast.Name(id='Union'),
+            slice=ast.Tuple(
+                elts=[
+                    get_elt_2(type_.type) for type_ in types_in_union
+                ],
+            ),
+        ),
+    )
+
+
 def fake_dict_overload(schema_name: str):
     """
     Возвращает метод перегрузки для сложных типов:

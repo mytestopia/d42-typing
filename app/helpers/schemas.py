@@ -1,5 +1,7 @@
 import typing
 
+from district42.types import AnyProps
+
 
 def is_builtin_class_instance(obj):
     return obj.__module__ == 'builtins'
@@ -27,3 +29,13 @@ def get_module_to_import_from(schema_value: typing.Any) -> str:
 
     import_from = schema_value.__module__
     return remove_protected_prefix(import_from)
+
+
+def get_types_from_any(any_value_props) -> set[typing.Any]:
+    types_set = set()
+    for type_ in any_value_props.types:
+        if isinstance(type_.props, AnyProps):
+            types_set.update(get_types_from_any(type_.props))
+        else:
+            types_set.add(type_.__class__)
+    return types_set

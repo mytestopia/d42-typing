@@ -1,13 +1,18 @@
 import typing
 
-from d42.custom_type import Schema
-from d42.custom_type import CustomSchema
 from d42 import schema
+from d42.custom_type import CustomSchema, Schema
 from niltype import Nil
 
 import ast_generate
-from app.helpers import get_module_to_import_from, is_schema_type_simple, is_dict_empty, \
-    is_dict_without_keys, has_invalid_key
+from app.helpers import (
+    get_module_to_import_from,
+    get_types_from_any,
+    has_invalid_key,
+    is_dict_empty,
+    is_dict_without_keys,
+    is_schema_type_simple,
+)
 from app.modules.module import Module
 
 
@@ -91,14 +96,25 @@ class BlahBlahModule(Module):
         else:
             self._generate_scalar_overload('ListSchema', schema_value.__class__.type, schema_value)
 
-    def _generate_overload_AnySchema(self, any_value):
+    def _generate_overload_AnySchema(self, schema_name, any_value, path_to_schema):
         if any_value.props.types is not Nil:
-            types_set = set(type.type for type in any_value.props.types)
+            types_set = list(get_types_from_any(any_value.props))
 
             if len(types_set) == 1:
                 type_ = any_value.props.types[0]
                 class_name = type_.__class__.__name__
                 self._generate_scalar_overload(class_name, type_.type, type_)
+                return
+            else:
+                self.add_import('typing', 'Union')
+                module_name = path_to_schema.replace('/', '.').replace('.py', '')
+                self.add_import(module_name, schema_name)
+                # self.add_import(get_module_to_import_from(any_value), schema_name)
+                for type_ in types_set:
+                    self._add_overload(
+                        schema_name,
+                        ast_generate.fake_union_overload(schema_name, types_set)
+                    )
                 return
 
         self.add_import('typing', 'Any')
@@ -124,7 +140,7 @@ class BlahBlahModule(Module):
             self._generate_scalar_overload(schema_type_name, str, schema_value)
 
         elif schema_type_name == 'AnySchema':
-            self._generate_overload_AnySchema(schema_value)
+            self._generate_overload_AnySchema(schema_name, schema_value, file_name)
 
         elif schema_type_name == 'ListSchema':
             self._generate_overload_ListSchema(file_name, schema_name, schema_value)

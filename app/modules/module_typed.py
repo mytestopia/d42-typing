@@ -1,11 +1,12 @@
 import typing
-from d42.custom_type import CustomSchema
-from d42.custom_type import Schema
+
+from d42.custom_type import CustomSchema, Schema
 from niltype import Nil
 
 import ast_generate
 from app.helpers import (
     get_module_to_import_from,
+    get_types_from_any,
     has_invalid_key,
     is_builtin_class_instance,
     is_dict_empty,
@@ -62,8 +63,11 @@ class TypedModule(Module):
                     self._generate_typing_DictSchema(nested_dict_schema_name, value_schema)
                     typing_map[key] = nested_dict_schema_name
 
-            elif value_schema.type is not None and not is_builtin_class_instance(
-                    value_schema.type):
+            elif (
+                    value_schema.type is not None
+                    and not is_builtin_class_instance(value_schema.type)
+            ):
+                # todo union для ключа в словаре
                 value_type = value_schema.type
                 self.add_import(get_module_to_import_from(value_schema.type), value_type.__name__)
                 typing_map[key] = value_type
@@ -90,13 +94,24 @@ class TypedModule(Module):
         self._generate_scalar_typing(list_name, 'ListSchema', list_value)
 
     def _generate_typing_AnySchema(self, any_name: str, any_value):
+
         if hasattr(any_value.props, 'types') and any_value.props.types is not Nil:
-            types_set = set(type.type for type in any_value.props.types)
+            types_set = list(get_types_from_any(any_value.props))
 
             if len(types_set) == 1:
-                type_ = any_value.props.types[0]
-                class_name = type_.__class__.__name__
-                self._generate_scalar_typing(any_name, class_name, type_)
+                type_ = types_set.pop()
+
+                if type_.__name__ == 'DictSchema':
+                    ...
+                    # todo union для словарей
+                self._generate_scalar_typing(any_name, type_.__name__, type_)
+                return
+
+            else:
+                self.add_import('typing', 'Union')
+                for type_ in types_set:
+                    self.add_import(get_module_to_import_from(type_), type_.__name__)
+                self._add_typing(ast_generate.annotated_assign_union(any_name, types_set))
                 return
 
         self.add_import('district42.types', 'AnySchema')
