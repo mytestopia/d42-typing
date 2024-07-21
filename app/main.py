@@ -6,7 +6,7 @@ import os
 import sys
 
 import app.modules as modules
-from app.helpers import get_module_variables, import_module, walk, get_module_imports
+from app.helpers import get_module_variables, import_module, walk
 
 
 def main():
@@ -46,9 +46,7 @@ def main():
         module_source = inspect.getsource(module)
         module_ast = ast.parse(module_source)
 
-        imports = get_module_imports(module_ast)
-        logging.debug(f'.. saved imports {len(imports)} for moving to .pyi stub')
-        typed_module = modules.TypedModule(file_name, imports)
+        typed_module = modules.TypedModule(file_name)
 
         for name in get_module_variables(module_ast):
             value = getattr(module, name)

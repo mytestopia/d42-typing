@@ -1,4 +1,3 @@
-import ast
 import typing
 from d42.custom_type import CustomSchema
 from d42.custom_type import Schema
@@ -20,17 +19,11 @@ from .module import Module
 
 class TypedModule(Module):
 
-    def __init__(self, path: str,
-                 origin_imports: typing.Optional[list[ast.ImportFrom]] = None):
-        super().__init__(path)
-        self.origin_imports = origin_imports or []
-
     def _add_typing(self, item):
         self.typed_items.append(item)
 
     def get_ast_content(self) -> list[str] | None:
         imports = [import_.to_ast() for import_ in self.imports]
-        imports += self.origin_imports
         items = self.typed_items
         if items:
             return imports + items

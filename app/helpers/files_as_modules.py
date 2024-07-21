@@ -11,22 +11,6 @@ def import_module(workdir_path: str, file_path: str) -> ModuleType:
     return module
 
 
-def get_module_imports(module_ast: ast.Module) -> list[ast.ImportFrom]:
-    imports = []
-    for node in module_ast.body:
-        if not isinstance(node, ast.ImportFrom):
-            continue
-        if (
-                node.module not in ['d42', 'district42', 'district42_exp_types']
-                and not node.module.startswith('d42.')
-                and not node.module.startswith('district42.')
-                and not node.module.startswith('district42_exp_types.')
-                and not node.module.startswith('schemas.')
-        ):
-            imports.append(node)
-    return imports
-
-
 def get_module_variables(module_ast: ast.Module) -> list[str]:
     variables = []
 
