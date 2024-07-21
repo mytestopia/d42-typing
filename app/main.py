@@ -64,3 +64,7 @@ def main():
         f'Successfully processed {schemas_count} schemas, {file_count} files in {args.path_to_schemas}/')
 
     sys.path.remove(cwd)
+
+
+if __name__ == '__main__':
+    main()
