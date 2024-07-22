@@ -67,10 +67,30 @@ class TypedModule(Module):
                     value_schema.type is not None
                     and not is_builtin_class_instance(value_schema.type)
             ):
-                # todo union для ключа в словаре
                 value_type = value_schema.type
-                self.add_import(get_module_to_import_from(value_schema.type), value_type.__name__)
-                typing_map[key] = value_type
+
+                if value_schema.__class__.__name__ == 'AnySchema':
+                    types_in_any = get_types_from_any(value_schema.props)
+
+                    if len(types_in_any) == 1:
+                        type_ = types_in_any.pop()
+                        self.add_import(get_module_to_import_from(type_), type_.__name__)
+                        typing_map[key] = type_
+
+                    else:
+                        # todo
+                        self.add_import('typing', 'Union')
+                        for type_ in types_in_any:
+                            self.add_import(get_module_to_import_from(type_), type_.__name__)
+                        self.add_import(get_module_to_import_from(value_schema.type),
+                                        value_type.__name__)
+                        typing_map[key] = value_type
+                        # self._add_typing(
+                        #     ast_generate.annotated_assign_union(any_name, types_in_any))
+
+                else:
+                    self.add_import(get_module_to_import_from(value_schema.type), value_type.__name__)
+                    typing_map[key] = value_type
 
             else:
                 self.add_import(get_module_to_import_from(value_schema), value_type.__name__)
@@ -96,10 +116,10 @@ class TypedModule(Module):
     def _generate_typing_AnySchema(self, any_name: str, any_value):
 
         if hasattr(any_value.props, 'types') and any_value.props.types is not Nil:
-            types_set = list(get_types_from_any(any_value.props))
+            types_in_any = get_types_from_any(any_value.props)
 
-            if len(types_set) == 1:
-                type_ = types_set.pop()
+            if len(types_in_any) == 1:
+                type_ = types_in_any.pop()
 
                 if type_.__name__ == 'DictSchema':
                     ...
@@ -109,9 +129,9 @@ class TypedModule(Module):
 
             else:
                 self.add_import('typing', 'Union')
-                for type_ in types_set:
+                for type_ in types_in_any:
                     self.add_import(get_module_to_import_from(type_), type_.__name__)
-                self._add_typing(ast_generate.annotated_assign_union(any_name, types_set))
+                self._add_typing(ast_generate.annotated_assign_union(any_name, types_in_any))
                 return
 
         self.add_import('district42.types', 'AnySchema')

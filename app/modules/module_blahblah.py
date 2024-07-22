@@ -98,23 +98,22 @@ class BlahBlahModule(Module):
 
     def _generate_overload_AnySchema(self, schema_name, any_value, path_to_schema):
         if any_value.props.types is not Nil:
-            types_set = list(get_types_from_any(any_value.props))
+            types_in_any = get_types_from_any(any_value.props)
 
-            if len(types_set) == 1:
+            if len(types_in_any) == 1:
                 type_ = any_value.props.types[0]
                 class_name = type_.__class__.__name__
                 self._generate_scalar_overload(class_name, type_.type, type_)
                 return
+
             else:
                 self.add_import('typing', 'Union')
                 module_name = path_to_schema.replace('/', '.').replace('.py', '')
                 self.add_import(module_name, schema_name)
-                # self.add_import(get_module_to_import_from(any_value), schema_name)
-                for type_ in types_set:
-                    self._add_overload(
-                        schema_name,
-                        ast_generate.fake_union_overload(schema_name, types_set)
-                    )
+                self._add_overload(
+                    schema_name,
+                    ast_generate.fake_union_overload(schema_name, types_in_any)
+                )
                 return
 
         self.add_import('typing', 'Any')
