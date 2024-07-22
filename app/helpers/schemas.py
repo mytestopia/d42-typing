@@ -31,11 +31,14 @@ def get_module_to_import_from(schema_value: typing.Any) -> str:
     return remove_protected_prefix(import_from)
 
 
-def get_types_from_any(any_value_props) -> set[typing.Any]:
-    types_set = set()
+def get_types_from_any(any_value_props) -> list[typing.Any]:
+    types_list = list()
     for type_ in any_value_props.types:
         if isinstance(type_.props, AnyProps):
-            types_set.update(get_types_from_any(type_.props))
+            types_list.extend(get_types_from_any(type_.props))
         else:
-            types_set.add(type_.__class__)
-    return types_set
+            types_list.append(type_.__class__)
+
+    unique_types = []
+    [unique_types.append(x) for x in types_list if x not in unique_types]
+    return unique_types

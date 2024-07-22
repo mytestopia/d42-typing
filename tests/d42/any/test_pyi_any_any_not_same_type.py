@@ -11,9 +11,9 @@ TestSchema = schema.str | schema.int | schema.none
 CODE_PYI = '''\
 from typing import Union
 from district42.types import StrSchema
-from district42.types import NoneSchema
 from district42.types import IntSchema
-TestSchema: Union[StrSchema, NoneSchema, IntSchema]\
+from district42.types import NoneSchema
+TestSchema: Union[StrSchema, IntSchema, NoneSchema]\
 '''
 
 BLAHBLAH_PYI = '''\
@@ -22,7 +22,7 @@ from typing import Union
 from test_file_name import TestSchema
 
 @overload
-def fake(schema: TestSchema) -> Union[str, None, int]:
+def fake(schema: TestSchema) -> Union[str, int, None]:
     pass\
 '''
 
@@ -39,8 +39,6 @@ def test_any_any_not_same_type_pyi():
     assert typed_module.get_printable_content() == CODE_PYI
 
 
-# нестабильный тест
-# @pytest.mark.skip(reason='порядок типов в Union не гарантируется совпадает')
 def test_any_any_not_same_type_pyi_blahblah():
     module = load_module_from_string('test_scalar', CODE)
     schema_description = getattr(module, SCHEMA_NAME)

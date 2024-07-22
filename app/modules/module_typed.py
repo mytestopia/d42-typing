@@ -96,10 +96,10 @@ class TypedModule(Module):
     def _generate_typing_AnySchema(self, any_name: str, any_value):
 
         if hasattr(any_value.props, 'types') and any_value.props.types is not Nil:
-            types_set = list(get_types_from_any(any_value.props))
+            types_in_any = get_types_from_any(any_value.props)
 
-            if len(types_set) == 1:
-                type_ = types_set.pop()
+            if len(types_in_any) == 1:
+                type_ = types_in_any.pop()
 
                 if type_.__name__ == 'DictSchema':
                     ...
@@ -109,9 +109,9 @@ class TypedModule(Module):
 
             else:
                 self.add_import('typing', 'Union')
-                for type_ in types_set:
+                for type_ in types_in_any:
                     self.add_import(get_module_to_import_from(type_), type_.__name__)
-                self._add_typing(ast_generate.annotated_assign_union(any_name, types_set))
+                self._add_typing(ast_generate.annotated_assign_union(any_name, types_in_any))
                 return
 
         self.add_import('district42.types', 'AnySchema')
