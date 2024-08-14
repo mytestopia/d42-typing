@@ -1,6 +1,8 @@
 import ast
 from typing import Tuple
 
+from niltype import Nil
+
 import ast_generate
 from app.helpers import (
     get_module_to_import_from,
@@ -54,6 +56,7 @@ class DictTyping(Typing):
             value_, _ = item_value
             value_as_class = UnknownTypeSchema(key, value_)
 
+            # если значение словаря само является словарем
             if DictTyping.is_valid_type_for_schema(value_as_class):
                 sub_dict_schema = DictTyping(key, value_)
 
@@ -83,22 +86,28 @@ class DictTyping(Typing):
                 value_type = value_schema.type
 
                 if value_schema.__class__.__name__ == 'AnySchema':
-                    types_in_any = get_types_from_any(value_schema.props)
 
-                    if len(types_in_any) == 1:
-                        type_ = types_in_any.pop()
-                        imports.append(Import(get_module_to_import_from(type_), type_.__name__))
-                        typing_map[key] = type_
+                    if value_schema.props.types is not Nil:
+                        types_in_any = get_types_from_any(value_schema.props)
+
+                        if len(types_in_any) == 1:
+                            type_ = types_in_any.pop()
+                            imports.append(Import(get_module_to_import_from(type_), type_.__name__))
+                            typing_map[key] = type_
+
+                        else:
+                            # todo
+                            imports.append(Import('typing', 'Union'))
+                            for type_ in types_in_any:
+                                imports.append(
+                                    Import(get_module_to_import_from(type_), type_.__name__))
+                            imports.append(Import(get_module_to_import_from(value_schema.type),
+                                                  value_type.__name__))
+                            typing_map[key] = value_type
 
                     else:
-                        # todo
-                        imports.append(Import('typing', 'Union'))
-                        for type_ in types_in_any:
-                            imports.append(
-                                Import(get_module_to_import_from(type_), type_.__name__))
-                        imports.append(Import(get_module_to_import_from(value_schema.type),
-                                              value_type.__name__))
-                        typing_map[key] = value_type
+                        imports.append(Import(get_module_to_import_from(value_), value_.__class__.__name__))
+                        typing_map[key] = value_schema.__class__.__name__
 
                 else:
                     imports.append(
