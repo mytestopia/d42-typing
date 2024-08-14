@@ -1,12 +1,12 @@
 import ast
-from typing import Any, Tuple
+from typing import Tuple
 
 from niltype import Nil
 
 import ast_generate
 from app.helpers import get_module_to_import_from, get_types_from_any
 from app.modules.module import Import
-from app.types._type import Typing, UnknownTypeSchema, OverloadedFake
+from app.types._type import OverloadedFake, Typing, UnknownTypeSchema
 
 
 class AnyTyping(Typing):
@@ -14,7 +14,7 @@ class AnyTyping(Typing):
     @classmethod
     def is_valid_type_for_schema(cls, schema_: UnknownTypeSchema) -> bool:
         return schema_.class_name == 'AnySchema'
-    
+
     def generate_pyi(self) -> Tuple[list[ast.AnnAssign], list[Import]]:
         imports = []
         annotations = []
@@ -42,7 +42,7 @@ class AnyTyping(Typing):
         imports.append(Import('district42.types', 'AnySchema'))
         annotations.append(ast_generate.annotated_assign(self.name, 'AnySchema'))
         return annotations, imports
-    
+
     def generate_fake_overload(self,  path_to_schema: str) -> Tuple[OverloadedFake, list[Import]]:
         imports = []
         if self.value.props.types is not Nil:
@@ -77,4 +77,3 @@ class AnyTyping(Typing):
             ast_generate.fake_scalar_overload('AnySchema', self.value.__class__.type)
         )
         return overload, imports
-

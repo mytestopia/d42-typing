@@ -8,7 +8,7 @@ from district42 import Schema
 import ast_generate
 from app.helpers import get_module_to_import_from
 from app.modules.module import Import
-from app.types._type import Typing, UnknownTypeSchema, OverloadedFake
+from app.types._type import OverloadedFake, Typing, UnknownTypeSchema
 from ast_generate import annotated_assign
 
 

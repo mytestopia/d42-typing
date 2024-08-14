@@ -59,6 +59,7 @@ def test_dict_key_any_pyi():
 
     assert typed_module.get_printable_content() == CODE_PYI
 
+
 @pytest.mark.skip
 def test_dict_key_any_pyi_blahblah():
     module = load_module_from_string('test.module', CODE)

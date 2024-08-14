@@ -2,7 +2,8 @@ from d42 import schema
 from d42.custom_type import Schema
 
 from app.modules.module import Module
-from ..types._type import UnknownTypeSchema, OverloadedFake
+
+from ..types._type import OverloadedFake, UnknownTypeSchema
 from ..types.any import AnyTyping
 from ..types.custom import CustomTyping
 from ..types.dict import DictTyping

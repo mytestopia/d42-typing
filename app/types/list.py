@@ -1,12 +1,12 @@
 import ast
-from typing import Any, Tuple
+from typing import Tuple
 
 from niltype import Nil
 
 import ast_generate
-from app.helpers import get_module_to_import_from, get_types_from_any
+from app.helpers import get_module_to_import_from
 from app.modules.module import Import
-from app.types._type import Typing, UnknownTypeSchema, OverloadedFake
+from app.types._type import OverloadedFake, Typing, UnknownTypeSchema
 
 
 class ListTyping(Typing):
@@ -30,9 +30,9 @@ class ListTyping(Typing):
 
         annotation = ast_generate.annotated_assign(self.name, type(self.value).__name__)
         import_ = Import(get_module_to_import_from(self.value), self.value.__class__.__name__)
-        
+
         return [annotation], [import_]
-    
+
     def generate_fake_overload(self,  path_to_schema: str) -> Tuple[OverloadedFake, list[Import]]:
         imports = [Import('typing', 'List')]
 

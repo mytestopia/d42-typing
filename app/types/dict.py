@@ -1,5 +1,5 @@
 import ast
-from typing import Any, Tuple
+from typing import Tuple
 
 import ast_generate
 from app.helpers import (
@@ -11,7 +11,7 @@ from app.helpers import (
     is_dict_without_keys,
 )
 from app.modules.module import Import
-from app.types._type import Typing, UnknownTypeSchema, OverloadedFake
+from app.types._type import OverloadedFake, Typing, UnknownTypeSchema
 from ast_generate import annotated_assign
 
 
@@ -115,7 +115,7 @@ class DictTyping(Typing):
         annotations.append(ast_generate.dict_typeclass(self.name, meta_class_name, typing_map))
 
         return annotations, imports
-    
+
     def generate_fake_overload(self, path_to_schema: str) -> Tuple[OverloadedFake, list[Import]]:
 
         if self.is_dict_typed_as_empty():
