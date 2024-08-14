@@ -11,7 +11,7 @@ from app.helpers import (
     is_dict_without_keys,
 )
 from app.modules.module import Import
-from app.types._type import Typing, UnknownTypeSchema
+from app.types._type import Typing, UnknownTypeSchema, OverloadedFake
 from ast_generate import annotated_assign
 
 
@@ -70,13 +70,11 @@ class DictTyping(Typing):
 
                     typing_map[key] = sub_dict_schema.name
 
-
             value_schema, _ = item_value
             value_type = value_schema.__class__
 
             if value_type.__name__ == 'DictSchema':
                 pass  # вынесено наверх
-
 
             elif (
                     value_schema.type is not None
@@ -117,3 +115,27 @@ class DictTyping(Typing):
         annotations.append(ast_generate.dict_typeclass(self.name, meta_class_name, typing_map))
 
         return annotations, imports
+    
+    def generate_fake_overload(self, path_to_schema: str) -> Tuple[OverloadedFake, list[Import]]:
+
+        if self.is_dict_typed_as_empty():
+            imports = [
+                Import('typing', 'Dict'),
+                Import(get_module_to_import_from(self.value), self.class_name)
+            ]
+            overload = OverloadedFake(
+                self.class_name,
+                ast_generate.fake_scalar_overload(self.class_name, self.class_type)
+            )
+            return overload, imports
+
+        module_name = path_to_schema.replace('/', '.').replace('.py', '')
+        imports = [
+            Import('typing', 'Type'),
+            Import(module_name, self.name),
+        ]
+        overload = OverloadedFake(
+            self.name,
+            ast_generate.fake_dict_overload(self.name)
+        )
+        return overload, imports

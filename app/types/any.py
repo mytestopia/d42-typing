@@ -6,7 +6,7 @@ from niltype import Nil
 import ast_generate
 from app.helpers import get_module_to_import_from, get_types_from_any
 from app.modules.module import Import
-from app.types._type import Typing, UnknownTypeSchema
+from app.types._type import Typing, UnknownTypeSchema, OverloadedFake
 
 
 class AnyTyping(Typing):
@@ -42,4 +42,39 @@ class AnyTyping(Typing):
         imports.append(Import('district42.types', 'AnySchema'))
         annotations.append(ast_generate.annotated_assign(self.name, 'AnySchema'))
         return annotations, imports
+    
+    def generate_fake_overload(self,  path_to_schema: str) -> Tuple[OverloadedFake, list[Import]]:
+        imports = []
+        if self.value.props.types is not Nil:
+            types_in_any = get_types_from_any(self.value.props)
+
+            if len(types_in_any) == 1:
+                type_ = self.value.props.types[0]
+                class_name = type_.__class__.__name__
+                imports.append(Import(get_module_to_import_from(type_), class_name))
+                overload = OverloadedFake(
+                    class_name,
+                    ast_generate.fake_scalar_overload(class_name, type_.type)
+                )
+                return overload, imports
+
+            else:
+                module_name = path_to_schema.replace('/', '.').replace('.py', '')
+                imports.extend([
+                    Import('typing', 'Union'),
+                    Import(module_name, self.name),
+                ])
+                overload = OverloadedFake(
+                    self.name,
+                    ast_generate.fake_union_overload(self.name, types_in_any)
+                )
+                return overload, imports
+
+        imports.append(Import('typing', 'Any'))
+        imports.append(Import(get_module_to_import_from(self.value), 'AnySchema'))
+        overload = OverloadedFake(
+            'AnySchema',
+            ast_generate.fake_scalar_overload('AnySchema', self.value.__class__.type)
+        )
+        return overload, imports
 

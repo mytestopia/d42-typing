@@ -1,12 +1,14 @@
 import ast
 import typing
-from typing import Any, Tuple
+from typing import Tuple
 
 from d42.custom_type import CustomSchema
+from district42 import Schema
 
+import ast_generate
 from app.helpers import get_module_to_import_from
 from app.modules.module import Import
-from app.types._type import Typing, UnknownTypeSchema
+from app.types._type import Typing, UnknownTypeSchema, OverloadedFake
 from ast_generate import annotated_assign
 
 
@@ -31,3 +33,33 @@ class CustomTyping(Typing):
         imports = [Import(get_module_to_import_from(self.value.type), self.class_name)]
         return [annotation], imports
 
+    def generate_fake_overload(self,  path_to_schema: str) -> Tuple[OverloadedFake, list[Import]]:
+        # для кастомных схем, у которых не прописан тип:
+        if (
+            hasattr(self.value, 'type') is False
+            or self.value.type is typing.Any
+        ):
+            registered_type_name = self.value.__class__.__name__
+            imports = [
+                Import('typing', 'Any'),
+                Import(path_to_schema, registered_type_name)
+            ]
+            overload = OverloadedFake(typing.Any,
+                                      ast_generate.fake_scalar_overload(
+                                          registered_type_name, typing.Any))
+            return overload, imports
+
+        else:
+            if issubclass(self.class_type, Schema):
+                imports = [
+                    Import(get_module_to_import_from(self.class_type), self.class_name)
+                ]
+                overload = OverloadedFake(self.class_type,
+                                          ast_generate.fake_scalar_overload(self.class_name,
+                                                                            self.class_type.type))
+                return overload, imports
+            else:
+                # todo
+                pass
+            pass
+        return None, []

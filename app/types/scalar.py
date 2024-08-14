@@ -1,9 +1,11 @@
 import ast
+import typing
 from typing import Any, Tuple
 
+import ast_generate
 from app.helpers import get_module_to_import_from
 from app.modules.module import Import
-from app.types._type import Typing, UnknownTypeSchema
+from app.types._type import Typing, UnknownTypeSchema, OverloadedFake
 from ast_generate import annotated_assign
 
 
@@ -22,3 +24,29 @@ class ScalarTyping(Typing):
         annotation = annotated_assign(self.name, type(self.value).__name__)
         imports = [Import(get_module_to_import_from(self.value), self.class_name)]
         return [annotation], imports
+
+    def generate_fake_overload(self,  path_to_schema: str) -> Tuple[OverloadedFake, list[Import]]:
+        imports = []
+
+        imports.append(Import(get_module_to_import_from(self.value), self.class_name))
+        if self.class_name == 'NoneSchema':
+            overload = OverloadedFake(
+                self.class_name,
+                ast_generate.fake_none_overload(self.class_name)
+            )
+            return overload, imports
+        
+        elif self.value.type is typing.Any:
+            imports.append(Import('typing', 'Any'))
+            overload = OverloadedFake(
+                typing.Any,
+                ast_generate.fake_scalar_overload(self.class_name, typing.Any)
+            )
+            return overload, imports
+
+        overload = OverloadedFake(
+            self.class_name,
+            ast_generate.fake_scalar_overload(self.class_name, self.value.__class__.type)
+        )
+
+        return overload, imports
