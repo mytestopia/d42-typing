@@ -27,8 +27,6 @@ def fake(schema: TestSchema) -> Union[str, int, None]:
 '''
 
 
-# нестабильный тест
-# @pytest.mark.skip(reason='порядок типов в Union не гарантируется совпадает')
 def test_any_any_not_same_type_pyi():
     module = load_module_from_string('test_scalar', CODE)
     schema_description = getattr(module, SCHEMA_NAME)

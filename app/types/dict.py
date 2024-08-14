@@ -1,5 +1,5 @@
 import ast
-from typing import Tuple
+from typing import Dict, Tuple
 
 from niltype import Nil
 
@@ -15,6 +15,12 @@ from app.helpers import (
 from app.modules.module import Import
 from app.types._type import OverloadedFake, Typing, UnknownTypeSchema
 from ast_generate import annotated_assign
+from ast_generate.dict_value_type import (
+    DictValueSubDictSimpleType,
+    DictValueSubDictType,
+    DictValueUnionType,
+    ScalarDictValueType,
+)
 
 
 class DictTyping(Typing):
@@ -62,7 +68,7 @@ class DictTyping(Typing):
 
                 if sub_dict_schema.is_dict_typed_as_empty():
                     imports.append(Import('typing', 'Dict'))
-                    typing_map[key] = value_.type
+                    typing_map[key] = DictValueSubDictSimpleType(Dict)
 
                 else:
                     sub_dict_schema.update_name(f'{self.name}_{key.capitalize()}Schema')
@@ -71,7 +77,7 @@ class DictTyping(Typing):
                     annotations.extend(nested_annotations)
                     imports.extend(nested_imports)
 
-                    typing_map[key] = sub_dict_schema.name
+                    typing_map[key] = DictValueSubDictType(sub_dict_schema.name)
 
             value_schema, _ = item_value
             value_type = value_schema.__class__
@@ -93,31 +99,30 @@ class DictTyping(Typing):
                         if len(types_in_any) == 1:
                             type_ = types_in_any.pop()
                             imports.append(Import(get_module_to_import_from(type_), type_.__name__))
-                            typing_map[key] = type_
+                            typing_map[key] = ScalarDictValueType(type_)
 
                         else:
-                            # todo
                             imports.append(Import('typing', 'Union'))
                             for type_ in types_in_any:
                                 imports.append(
                                     Import(get_module_to_import_from(type_), type_.__name__))
-                            imports.append(Import(get_module_to_import_from(value_schema.type),
-                                                  value_type.__name__))
-                            typing_map[key] = value_type
+                            typing_map[key] = DictValueUnionType(types_in_any)
 
                     else:
+                        # когда value = schema.any
                         imports.append(Import(get_module_to_import_from(value_), value_.__class__.__name__))
-                        typing_map[key] = value_schema.__class__.__name__
+                        typing_map[key] = ScalarDictValueType(value_schema.__class__)
 
                 else:
+                    # когда value =typing.Any
                     imports.append(
                         Import(get_module_to_import_from(value_schema.type), value_type.__name__))
-                    typing_map[key] = value_type
+                    typing_map[key] = DictValueSubDictSimpleType(value_type)
 
             else:
                 imports.append(
                     Import(get_module_to_import_from(value_schema), value_type.__name__))
-                typing_map[key] = value_type
+                typing_map[key] = ScalarDictValueType(value_type)
 
         meta_class_name = f'_D42Meta{self.name}'
         annotations.append(ast_generate.dict_metaclass(meta_class_name, typing_map))

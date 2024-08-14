@@ -1,15 +1,14 @@
 import ast
 from typing import Any
 
+from ast_generate.dict_value_type import AnyDictValueType
+
 
 def get_getitem_method_return_ast(type_schema: Any) -> Any:
     """
     Возвращает ast-тип возвращаемого значения метода __getitem__.
     """
-    # FIXME для вложенных словорей type_schema строка, для остальных - объект
-    if hasattr(type_schema, '__name__'):
-        return ast.Name(id=type_schema.__name__)
-    return ast.Name(type_schema)
+    return type_schema.get_type_for_metaclass()
 
 
 def getitem_method(key_name: str, type_schema: Any, keys_count: int):
@@ -69,7 +68,7 @@ def schema_substitution_methods() -> list[ast.FunctionDef]:
     return [ast_method(name) for name in ['__mod__', '__add__']]
 
 
-def dict_metaclass(name: str, typing_map: dict[str, Any]):
+def dict_metaclass(name: str, typing_map: dict[str, AnyDictValueType]):
     """
     Возвращает ast-класс, используемый в мета-классе для типизации словаря.
     Пример:
