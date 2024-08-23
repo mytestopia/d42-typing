@@ -3,12 +3,13 @@ from d42.custom_type import Schema
 
 from app.modules.module import Module
 
-from ..types._type import OverloadedFake, UnknownTypeSchema
-from ..types.any import AnyTyping
-from ..types.custom import CustomTyping
-from ..types.dict import DictTyping
-from ..types.list import ListTyping
-from ..types.scalar import ScalarTyping
+from app.types import OverloadedFake, UnknownTypeSchema
+from app.types import AnyTyping
+from app.types import CustomTyping
+from app.types import DictTyping
+from app.types import ListTyping
+from app.types import ScalarTyping
+from app.types import SchemaTyping
 
 
 class BlahBlahModule(Module):
@@ -46,6 +47,10 @@ class BlahBlahModule(Module):
             self.add_import_new(*imports)
             self._add_overload(overload)
 
+        overload, imports = SchemaTyping(Schema).generate_fake_overload()
+        self.add_import_new(*imports)
+        self._add_overload(overload)
+
     def generate(self, file_name, schema_name, schema_value):
         if not isinstance(schema_value, Schema):
             return
@@ -68,4 +73,3 @@ class BlahBlahModule(Module):
                 overload, imports = typing_(schema_name, schema_value).generate_fake_overload(file_name)
                 self.add_import_new(*imports)
                 self._add_overload(overload)
-                return

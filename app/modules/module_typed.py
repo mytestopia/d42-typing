@@ -5,12 +5,12 @@ from d42.custom_type import Schema
 from app.helpers import is_builtin_class_instance
 from ast_generate import annotated_assign
 
-from ..types._type import UnknownTypeSchema
-from ..types.any import AnyTyping
-from ..types.custom import CustomTyping
-from ..types.dict import DictTyping
-from ..types.list import ListTyping
-from ..types.scalar import ScalarTyping
+from app.types import UnknownTypeSchema
+from app.types import AnyTyping
+from app.types import CustomTyping
+from app.types import DictTyping
+from app.types import ListTyping
+from app.types import ScalarTyping
 from .module import Module
 
 

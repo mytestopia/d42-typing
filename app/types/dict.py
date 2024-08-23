@@ -114,7 +114,7 @@ class DictTyping(Typing):
                         typing_map[key] = ScalarDictValueType(value_schema.__class__)
 
                 else:
-                    # когда value =typing.Any
+                    # когда value = typing.Any
                     imports.append(
                         Import(get_module_to_import_from(value_schema.type), value_type.__name__))
                     typing_map[key] = DictValueSubDictSimpleType(value_type)

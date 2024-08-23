@@ -42,7 +42,7 @@ class CustomTyping(Typing):
             registered_type_name = self.value.__class__.__name__
             imports = [
                 Import('typing', 'Any'),
-                Import(path_to_schema, registered_type_name)
+                Import(get_module_to_import_from(self.value), registered_type_name)
             ]
             overload = OverloadedFake(typing.Any,
                                       ast_generate.fake_scalar_overload(
@@ -54,7 +54,7 @@ class CustomTyping(Typing):
                 imports = [
                     Import(get_module_to_import_from(self.class_type), self.class_name)
                 ]
-                overload = OverloadedFake(self.class_type,
+                overload = OverloadedFake(self.class_name,
                                           ast_generate.fake_scalar_overload(self.class_name,
                                                                             self.class_type.type))
                 return overload, imports

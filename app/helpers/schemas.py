@@ -1,5 +1,6 @@
 import typing
 
+from d42.custom_type import CustomSchema
 from district42.types import AnyProps
 
 
@@ -34,7 +35,15 @@ def get_module_to_import_from(schema_value: typing.Any) -> str:
 def get_types_from_any(any_value_props) -> list[typing.Any]:
     types_list = list()
     for type_ in any_value_props.types:
-        if isinstance(type_.props, AnyProps):
+        if issubclass(type_.__class__, CustomSchema):
+            if (
+                hasattr(type_, 'type') is False
+                or type_.type is typing.Any
+            ):
+                types_list.append(typing.Any)
+            else:
+                types_list.append(type_.type)
+        elif isinstance(type_.props, AnyProps):
             types_list.extend(get_types_from_any(type_.props))
         else:
             types_list.append(type_.__class__)

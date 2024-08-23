@@ -49,8 +49,8 @@ class AnyTyping(Typing):
             types_in_any = get_types_from_any(self.value.props)
 
             if len(types_in_any) == 1:
-                type_ = self.value.props.types[0]
-                class_name = type_.__class__.__name__
+                type_ = types_in_any[0]
+                class_name = type_.__name__
                 imports.append(Import(get_module_to_import_from(type_), class_name))
                 overload = OverloadedFake(
                     class_name,
