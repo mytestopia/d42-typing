@@ -43,8 +43,10 @@ def get_types_from_any(any_value_props) -> list[typing.Any]:
                 types_list.append(typing.Any)
             else:
                 types_list.append(type_.type)
+
         elif isinstance(type_.props, AnyProps):
             types_list.extend(get_types_from_any(type_.props))
+
         else:
             types_list.append(type_.__class__)
 

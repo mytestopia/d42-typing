@@ -43,7 +43,7 @@ def main():
 
     for file_name in walk(args.path_to_schemas):
         logging.debug(f'.. creating types for: {file_name}')
-        module = import_module(args.path_to_schemas, file_name)
+        module = import_module(file_name)
         module_source = inspect.getsource(module)
         module_ast = ast.parse(module_source)
 

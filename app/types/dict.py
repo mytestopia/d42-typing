@@ -7,10 +7,8 @@ import ast_generate
 from app.helpers import (
     get_module_to_import_from,
     get_types_from_any,
-    has_invalid_key,
     is_builtin_class_instance,
-    is_dict_empty,
-    is_dict_without_keys,
+    is_dict_typed_as_empty,
 )
 from app.modules.module import Import
 from app.types._type import OverloadedFake, Typing, UnknownTypeSchema
@@ -32,13 +30,6 @@ class DictTyping(Typing):
     def update_name(self, name: str):
         self.name = name
 
-    def is_dict_typed_as_empty(self) -> bool:
-        return (
-                is_dict_without_keys(self.value)
-                or is_dict_empty(self.value)
-                or has_invalid_key(self.value.props.keys)
-        )
-
     def generate_pyi_empty_dict(self) -> Tuple[list[ast.AnnAssign], list[Import]]:
         annotation = annotated_assign(self.name, type(self.value).__name__)
         import_ = Import(get_module_to_import_from(self.value), self.value.__class__.__name__)
@@ -50,7 +41,7 @@ class DictTyping(Typing):
 
         # todo для nested dict типизация присутствует дважды
 
-        if self.is_dict_typed_as_empty():
+        if is_dict_typed_as_empty(self.value):
             return self.generate_pyi_empty_dict()
 
         typing_map = {}
@@ -66,7 +57,7 @@ class DictTyping(Typing):
             if DictTyping.is_valid_type_for_schema(value_as_class):
                 sub_dict_schema = DictTyping(key, value_)
 
-                if sub_dict_schema.is_dict_typed_as_empty():
+                if is_dict_typed_as_empty(sub_dict_schema.value):
                     imports.append(Import('typing', 'Dict'))
                     typing_map[key] = DictValueSubDictSimpleType(Dict)
 
@@ -79,22 +70,17 @@ class DictTyping(Typing):
 
                     typing_map[key] = DictValueSubDictType(sub_dict_schema.name)
 
-            value_schema, _ = item_value
-            value_type = value_schema.__class__
-
-            if value_type.__name__ == 'DictSchema':
-                pass  # вынесено наверх
-
             elif (
-                    value_schema.type is not None
-                    and not is_builtin_class_instance(value_schema.type)
+                    value_.type is not None
+                    and not is_builtin_class_instance(value_.type)
             ):
-                value_type = value_schema.type
+                value_type = value_.type
 
-                if value_schema.__class__.__name__ == 'AnySchema':
+                # когда value = schema.any(...)
+                if value_.__class__.__name__ == 'AnySchema':
 
-                    if value_schema.props.types is not Nil:
-                        types_in_any = get_types_from_any(value_schema.props)
+                    if value_.props.types is not Nil:
+                        types_in_any = get_types_from_any(value_.props)
 
                         if len(types_in_any) == 1:
                             type_ = types_in_any.pop()
@@ -111,18 +97,18 @@ class DictTyping(Typing):
                     else:
                         # когда value = schema.any
                         imports.append(Import(get_module_to_import_from(value_), value_.__class__.__name__))
-                        typing_map[key] = ScalarDictValueType(value_schema.__class__)
+                        typing_map[key] = ScalarDictValueType(value_.__class__)
 
                 else:
                     # когда value = typing.Any
                     imports.append(
-                        Import(get_module_to_import_from(value_schema.type), value_type.__name__))
+                        Import(get_module_to_import_from(value_.type), value_type.__name__))
                     typing_map[key] = DictValueSubDictSimpleType(value_type)
 
             else:
                 imports.append(
-                    Import(get_module_to_import_from(value_schema), value_type.__name__))
-                typing_map[key] = ScalarDictValueType(value_type)
+                    Import(get_module_to_import_from(value_), value_.__class__.__name__))
+                typing_map[key] = ScalarDictValueType(value_.__class__)
 
         meta_class_name = f'_D42Meta{self.name}'
         annotations.append(ast_generate.dict_metaclass(meta_class_name, typing_map))
@@ -132,7 +118,7 @@ class DictTyping(Typing):
 
     def generate_fake_overload(self, path_to_schema: str) -> Tuple[OverloadedFake, list[Import]]:
 
-        if self.is_dict_typed_as_empty():
+        if is_dict_typed_as_empty(self.value):
             imports = [
                 Import('typing', 'Dict'),
                 Import(get_module_to_import_from(self.value), self.class_name)

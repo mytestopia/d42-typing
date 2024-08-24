@@ -3,8 +3,8 @@ import importlib.util
 from types import ModuleType
 
 
-def import_module(workdir_path: str, file_path: str) -> ModuleType:
-    name = file_path[:-3].replace("/", ".")  # suffix
+def import_module(file_path: str) -> ModuleType:
+    name = file_path[:-3].replace("/", ".")
     spec = importlib.util.spec_from_file_location(name, file_path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)

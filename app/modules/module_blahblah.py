@@ -2,14 +2,16 @@ from d42 import schema
 from d42.custom_type import Schema
 
 from app.modules.module import Module
-
-from app.types import OverloadedFake, UnknownTypeSchema
-from app.types import AnyTyping
-from app.types import CustomTyping
-from app.types import DictTyping
-from app.types import ListTyping
-from app.types import ScalarTyping
-from app.types import SchemaTyping
+from app.types import (
+    AnyTyping,
+    CustomTyping,
+    DictTyping,
+    ListTyping,
+    OverloadedFake,
+    ScalarTyping,
+    SchemaTyping,
+    UnknownTypeSchema,
+)
 
 
 class BlahBlahModule(Module):
