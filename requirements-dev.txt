@@ -1,0 +1,6 @@
+d42
+district42_exp_types
+pytest
+flake8
+mypy
+isort
