@@ -15,13 +15,14 @@ def find_dev_required():
 
 setup(
     name="d42-typing",
-    version="0.0.2",
-    description="asd",
+    version="0.0.1",
+    description=".pyi typing stubs generation for d42 schemas",
     install_requires=find_required(),
     entry_points={
         'console_scripts': ['d42-typing=app.main:main']
     },
-    author='asd',
+    author="Anna",
+    author_email="testopia13@gmail.com",
     packages=find_packages(),
     python_requires='>=3.10',
 )
