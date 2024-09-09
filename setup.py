@@ -15,7 +15,7 @@ def find_dev_required():
 
 setup(
     name="d42-typing",
-    version="0.0.1",
+    version="0.0.2",
     description=".pyi typing stubs generation for d42 schemas",
     install_requires=find_required(),
     entry_points={

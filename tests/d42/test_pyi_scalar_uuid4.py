@@ -15,8 +15,8 @@ TestUUID4Schema: UUID4Schema\
 
 CODE_BLAHBLAH_PYI = '''\
 from typing import overload
-from typing import Any
 from district42.types import UUID4Schema
+from typing import Any
 
 @overload
 def fake(schema: UUID4Schema) -> Any:

@@ -12,6 +12,7 @@ from district42.types import AnySchema
 from typing import Dict
 from district42.types import DictSchema
 from district42.types import FloatSchema
+from district42.types import NoneSchema
 from district42.types import Schema
 
 @overload
@@ -40,6 +41,10 @@ def fake(schema: DictSchema) -> Dict:
 
 @overload
 def fake(schema: FloatSchema) -> float:
+    pass
+
+@overload
+def fake(schema: NoneSchema) -> None:
     pass
 
 @overload

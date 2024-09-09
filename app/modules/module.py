@@ -45,6 +45,16 @@ class Module:
 
                 self.imports.append(new_import)
 
+    def add_import_new(self, *imports):
+        for import_ in imports:
+            if self.no_import_duplicates(import_):
+
+                duplicate_module = self.duplicate_in_module(import_)
+                if duplicate_module:
+                    logging.warning(f'Item {import_.item} has already imported from module {duplicate_module}')
+
+                self.imports.append(import_)
+
     def get_ast_content(self) -> list:
         return []
 

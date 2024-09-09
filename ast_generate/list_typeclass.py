@@ -18,7 +18,6 @@ def list_typeclass(name: str, item_type: str):
                         attr='type',
                     )
                 ),
-                # simple=1,
             )
         ],
         keywords=[],
