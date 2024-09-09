@@ -1,6 +1,15 @@
 import ast
 from typing import Any
 
+from ast_generate.dict_value_type import AnyDictValueType
+
+
+def get_getitem_method_return_ast(type_schema: Any) -> Any:
+    """
+    Возвращает ast-тип возвращаемого значения метода __getitem__.
+    """
+    return type_schema.get_type_for_metaclass()
+
 
 def getitem_method(key_name: str, type_schema: Any, keys_count: int):
     """
@@ -32,8 +41,7 @@ def getitem_method(key_name: str, type_schema: Any, keys_count: int):
         ],
         body=[ast.Pass()],
         decorator_list=decorators_list,
-        # FIXME для вложенных словорей type_schema строка, для остальных - объект
-        returns=ast.Name(id=str(type_schema.__name__) if hasattr(type_schema, '__name__') else type_schema),
+        returns=get_getitem_method_return_ast(type_schema)
     )
 
 
@@ -60,7 +68,7 @@ def schema_substitution_methods() -> list[ast.FunctionDef]:
     return [ast_method(name) for name in ['__mod__', '__add__']]
 
 
-def dict_metaclass(name: str, typing_map: dict[str, Any]):
+def dict_metaclass(name: str, typing_map: dict[str, AnyDictValueType]):
     """
     Возвращает ast-класс, используемый в мета-классе для типизации словаря.
     Пример:
@@ -83,8 +91,10 @@ def dict_metaclass(name: str, typing_map: dict[str, Any]):
     return ast.ClassDef(
         name=f"{name}",  # gen_unique_name
         bases=[ast.Name(id="type")],
-        body=[getitem_method(key, value, len(typing_map.keys())) for key, value in typing_map.items()] +
-             schema_substitution_methods(),
+        body=[
+                 getitem_method(key, value, len(typing_map.keys()))
+                 for key, value in typing_map.items()
+             ] + schema_substitution_methods(),
         keywords=[],
         decorator_list=[]
     )

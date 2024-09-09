@@ -13,8 +13,8 @@ StrUuidExampleSchema: UUIDStrSchema\
 
 CODE_BLAHBLAH_PYI = '''\
 from typing import overload
-from typing import Any
 from district42_exp_types.uuid_str import UUIDStrSchema
+from typing import Any
 
 @overload
 def fake(schema: UUIDStrSchema) -> Any:
