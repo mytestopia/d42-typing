@@ -1,3 +1,8 @@
+.PHONY: install
+install:
+	pip3 install --quiet --upgrade pip
+	pip3 install --quiet -r requirements.txt -r requirements-dev.txt
+
 .PHONY: lint
 lint:
 	python3 -m flake8 && python3 -m isort -m VERTICAL_HANGING_INDENT --check-only .
