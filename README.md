@@ -1,3 +1,6 @@
+[![PyPI](https://img.shields.io/pypi/v/d42-typing.svg?style=flat-square&color=rgb(24,114,110,0.8))](https://pypi.python.org/pypi/d42-typing/)
+[![Python Version](https://img.shields.io/pypi/pyversions/d42-typing.svg?style=flat-square&color=rgb(14,90,166,0.8))](https://pypi.python.org/pypi/d42-typing/)
+
 # d42-typing
 
 d42-typing is a Python package designed to enhance type-checking capabilities within the d42 ecosystem. 
