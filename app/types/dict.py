@@ -1,4 +1,5 @@
 import ast
+from keyword import iskeyword
 from typing import Dict, Tuple
 
 from niltype import Nil
@@ -76,8 +77,13 @@ class DictTyping(Typing):
             ):
                 value_type = value_.type
 
+                if hasattr(value_type, 'type') and is_builtin_class_instance(value_type.type):
+                    imports.append(
+                        Import(get_module_to_import_from(value_.type), value_.type.__name__))
+                    typing_map[key] = ScalarDictValueType(value_.type)
+
                 # когда value = schema.any(...)
-                if value_.__class__.__name__ == 'AnySchema':
+                elif value_.__class__.__name__ == 'AnySchema':
 
                     if value_.props.types is not Nil:
                         types_in_any = get_types_from_any(value_.props)
@@ -112,7 +118,11 @@ class DictTyping(Typing):
 
         meta_class_name = f'_D42Meta{self.name}'
         annotations.append(ast_generate.dict_metaclass(meta_class_name, typing_map))
-        annotations.append(ast_generate.dict_typeclass(self.name, meta_class_name, typing_map))
+
+        dict_typeclass_generator = ast_generate.dict_typeclass_v2 if any(
+            iskeyword(key) for key in typing_map.keys()) else ast_generate.dict_typeclass
+
+        annotations.append(dict_typeclass_generator(self.name, meta_class_name, typing_map))
 
         return annotations, imports
 

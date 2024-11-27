@@ -15,7 +15,7 @@ def find_dev_required():
 
 setup(
     name="d42-typing",
-    version="0.0.2",
+    version="0.0.3",
     description=".pyi typing stubs generation for d42 schemas",
     url="https://github.com/mytestopia/d42-typing",
     long_description=open("README.md").read(),
