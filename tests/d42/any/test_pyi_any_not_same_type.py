@@ -10,8 +10,8 @@ TestSchema = schema.any(schema.str('A'), schema.none)
 
 CODE_PYI = '''\
 from typing import Union
-from district42.types import StrSchema
-from district42.types import NoneSchema
+from d42.declaration.types import StrSchema
+from d42.declaration.types import NoneSchema
 TestSchema: Union[StrSchema, NoneSchema]\
 '''
 

@@ -5,8 +5,8 @@ from typing import Any, cast, TypeAlias
 from d42.custom_type import CustomSchema, PathHolder, Props, ValidationResult, register_type
 from d42.custom_type.utils import make_substitution_error
 from d42.custom_type.visitors import Generator, Representor, Substitutor, Validator
-from district42.types import StrSchema
-from district42.utils import TypeOrEllipsis
+from d42.declaration.types import StrSchema
+from d42.utils import TypeOrEllipsis
 from niltype import Nil, Nilable
 
 

@@ -16,7 +16,7 @@ from app.types import (
 
 class BlahBlahModule(Module):
     def __init__(self):
-        super().__init__('blahblah.py')
+        super().__init__('d42.py')
         self.add_import('typing', 'overload')
         self.overloaded_fakes = []
 

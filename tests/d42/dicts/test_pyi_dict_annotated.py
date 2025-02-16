@@ -5,7 +5,7 @@ SCHEMA_NAME = 'TestSchema'
 
 CODE = '''\
 from d42 import schema
-from district42.types import DictSchema
+from d42.declaration.types import DictSchema
 
 TestSchema: DictSchema = schema.dict({
     "id": schema.int,
@@ -17,8 +17,8 @@ CODE_PYI = '''\
 from typing import overload
 from typing import Literal
 from typing import TypedDict
-from district42.types import IntSchema
-from district42.types import StrSchema
+from d42.declaration.types import IntSchema
+from d42.declaration.types import StrSchema
 
 class _D42MetaTestSchema(type):
 

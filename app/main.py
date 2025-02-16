@@ -37,10 +37,6 @@ def main():
 
     blahblah_module = modules.BlahBlahModule()
 
-    if is_add_all:
-        logging.debug('.. creating standard types overload')
-        blahblah_module.generate_standard_types()
-
     for file_name in walk(args.path_to_schemas):
         logging.debug(f'.. creating types for: {file_name}')
         module = import_module(file_name)
@@ -62,6 +58,10 @@ def main():
 
         typed_module.print()
         file_count += 1
+
+    if is_add_all:
+        logging.debug('.. creating standard types overload')
+        blahblah_module.generate_standard_types()
 
     blahblah_module.print()
 

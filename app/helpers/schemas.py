@@ -1,7 +1,7 @@
 import typing
 
 from d42.custom_type import CustomSchema
-from district42.types import AnyProps
+from d42.declaration.types import AnyProps
 
 
 def is_builtin_class_instance(obj):
@@ -23,7 +23,7 @@ def is_schema_type_simple(schema_value: typing.Any) -> bool:
 def get_module_to_import_from(schema_value: typing.Any) -> str:
 
     def remove_protected_prefix(module_name: str) -> str:
-        """district42.types._any_schema -> district42.types"""
+        """d42.declaration.types._any_schema -> d42.declaration.types"""
         parts = module_name.split('.')
         filtered_parts = [part for part in parts if not part.startswith('_')]
         return '.'.join(filtered_parts)

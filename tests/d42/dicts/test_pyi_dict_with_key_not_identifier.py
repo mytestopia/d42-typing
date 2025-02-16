@@ -9,14 +9,14 @@ TestSchema = schema.dict({
 '''
 
 CODE_PYI = '''\
-from district42.types import DictSchema
+from d42.declaration.types import DictSchema
 TestSchema: DictSchema\
 '''
 
 CODE_BLAHBLAH = '''\
 from typing import overload
 from typing import Dict
-from district42.types import DictSchema
+from d42.declaration.types import DictSchema
 
 @overload
 def fake(schema: DictSchema) -> Dict:

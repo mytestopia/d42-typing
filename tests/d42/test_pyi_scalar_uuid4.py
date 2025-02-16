@@ -9,13 +9,13 @@ TestUUID4Schema = schema.uuid4
 '''
 
 CODE_PYI = '''\
-from district42.types import UUID4Schema
+from d42.declaration.types import UUID4Schema
 TestUUID4Schema: UUID4Schema\
 '''
 
 CODE_BLAHBLAH_PYI = '''\
 from typing import overload
-from district42.types import UUID4Schema
+from d42.declaration.types import UUID4Schema
 from typing import Any
 
 @overload

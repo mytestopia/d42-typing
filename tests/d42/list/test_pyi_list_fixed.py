@@ -9,14 +9,14 @@ TestSchema = schema.list([schema.int])
 '''
 
 CODE_PYI = '''\
-from district42.types import ListSchema
+from d42.declaration.types import ListSchema
 TestSchema: ListSchema\
 '''
 
 BLAHBLAH_PYI = '''\
 from typing import overload
 from typing import List
-from district42.types import ListSchema
+from d42.declaration.types import ListSchema
 
 @overload
 def fake(schema: ListSchema) -> List:

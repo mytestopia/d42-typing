@@ -9,14 +9,14 @@ TestSchema = schema.any
 '''
 
 CODE_PYI = '''\
-from district42.types import AnySchema
+from d42.declaration.types import AnySchema
 TestSchema: AnySchema\
 '''
 
 BLAHBLAH_PYI = '''\
 from typing import overload
 from typing import Any
-from district42.types import AnySchema
+from d42.declaration.types import AnySchema
 
 @overload
 def fake(schema: AnySchema) -> Any:

@@ -3,17 +3,17 @@ import app.modules as modules
 BLAHBLAH_PYI_STANDARD_TYPES = """\
 from typing import overload
 from typing import List
-from district42.types import ListSchema
-from district42.types import BoolSchema
-from district42.types import StrSchema
-from district42.types import IntSchema
+from d42.declaration.types import ListSchema
+from d42.declaration.types import BoolSchema
+from d42.declaration.types import StrSchema
+from d42.declaration.types import IntSchema
 from typing import Any
-from district42.types import AnySchema
+from d42.declaration.types import AnySchema
 from typing import Dict
-from district42.types import DictSchema
-from district42.types import FloatSchema
-from district42.types import NoneSchema
-from district42.types import Schema
+from d42.declaration.types import DictSchema
+from d42.declaration.types import FloatSchema
+from d42.declaration.types import NoneSchema
+from d42.declaration.types import Schema
 
 @overload
 def fake(schema: ListSchema) -> List:

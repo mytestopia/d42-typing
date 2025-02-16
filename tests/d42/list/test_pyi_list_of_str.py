@@ -10,7 +10,7 @@ TestSchema = schema.list(schema.str)
 
 CODE_PYI = '''\
 from typing import List
-from district42.types import StrSchema
+from d42.declaration.types import StrSchema
 
 class TestSchema:
     type = List[StrSchema.type]\

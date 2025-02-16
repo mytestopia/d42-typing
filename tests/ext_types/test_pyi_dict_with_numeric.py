@@ -1,6 +1,5 @@
 import app.modules as modules
 from app.helpers import load_module_from_string
-
 SCHEMA_NAME = 'TestDictNumericSchema'
 
 CODE = '''\
@@ -17,13 +16,13 @@ CODE_PYI = '''\
 from typing import overload
 from typing import Literal
 from typing import TypedDict
-from district42_exp_types.numeric import NumericSchema
-from district42.types import StrSchema
+from typing import Any
+from d42.declaration.types import StrSchema
 
 class _D42MetaTestDictNumericSchema(type):
 
     @overload
-    def __getitem__(cls, arg: Literal['id']) -> NumericSchema:
+    def __getitem__(cls, arg: Literal['id']) -> Any:
         pass
 
     @overload
@@ -39,7 +38,7 @@ class _D42MetaTestDictNumericSchema(type):
 class TestDictNumericSchema(metaclass=_D42MetaTestDictNumericSchema):
 
     class type(TypedDict, total=False):
-        id: NumericSchema.type
+        id: Any
         first_name: StrSchema.type\
 '''
 

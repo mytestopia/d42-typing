@@ -20,9 +20,10 @@ TestNumericSchema: NumericSchema\
 CODE_BLAHBLAH_PYI = '''\
 from typing import overload
 from district42_exp_types.numeric import NumericSchema
+from typing import Any
 
 @overload
-def fake(schema: NumericSchema) -> str:
+def fake(schema: NumericSchema) -> Any:
     pass\
 '''
 

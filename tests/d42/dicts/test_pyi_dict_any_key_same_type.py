@@ -15,7 +15,7 @@ CODE_PYI = '''\
 from typing import overload
 from typing import Literal
 from typing import TypedDict
-from district42.types import StrSchema
+from d42.declaration.types import StrSchema
 
 class _D42MetaTestSchema(type):
 

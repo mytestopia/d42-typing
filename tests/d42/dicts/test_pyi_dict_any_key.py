@@ -16,8 +16,8 @@ from typing import overload
 from typing import Literal
 from typing import TypedDict
 from typing import Union
-from district42.types import IntSchema
-from district42.types import NoneSchema
+from d42.declaration.types import IntSchema
+from d42.declaration.types import NoneSchema
 
 class _D42MetaTestSchema(type):
 

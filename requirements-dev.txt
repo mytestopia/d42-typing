@@ -1,4 +1,4 @@
-district42_exp_types
+district42_exp_types>=1.0,<2.0
 pytest
 flake8
 mypy
