@@ -14,7 +14,7 @@ from app.types import (
 )
 
 
-class BlahBlahModule(Module):
+class FakeModule(Module):
     def __init__(self):
         super().__init__('stubs/d42/fake.py')
         self.add_import('typing', 'overload')

@@ -68,7 +68,7 @@ def test_jj_history_pyi():
     schema_name = 'TestHistorySchema'
     schema_description = getattr(module, schema_name)
 
-    typed_module = modules.TypedModule('file_name')
+    typed_module = modules.TypedSchemaModule('file_name')
     typed_module.generate(schema_name, schema_description)
 
     assert typed_module.get_printable_content() == CODE_PYI
@@ -80,7 +80,7 @@ def test_jj_history_pyi_blahblah():
     schema_name = 'TestHistorySchema'
     schema_description = getattr(module, schema_name)
 
-    blahblah_module = modules.BlahBlahModule()
+    blahblah_module = modules.FakeModule()
     blahblah_module.generate('test_file_name', schema_name, schema_description)
 
     assert blahblah_module.get_printable_content() == CODE_BLAHBLAH_PYI

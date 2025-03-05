@@ -1,2 +1,2 @@
-from .module_blahblah import BlahBlahModule
-from .module_typed import TypedModule
+from .module_fake import FakeModule
+from .module_schema import TypedSchemaModule

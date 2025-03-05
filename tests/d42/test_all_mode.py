@@ -1,6 +1,6 @@
 import app.modules as modules
 
-BLAHBLAH_PYI_STANDARD_TYPES = """\
+FAKE_PYI_STANDARD_TYPES = """\
 from typing import overload
 from typing import List
 from d42.declaration.types import ListSchema
@@ -55,8 +55,8 @@ def fake(schema: Schema) -> Any:
 
 def test_all_mode_pyi_blahblah():
 
-    blahblah_module = modules.BlahBlahModule()
+    blahblah_module = modules.FakeModule()
     blahblah_module.generate_standard_types()
 
     # todo проверять иначе
-    assert blahblah_module.get_printable_content() == BLAHBLAH_PYI_STANDARD_TYPES
+    assert blahblah_module.get_printable_content() == FAKE_PYI_STANDARD_TYPES

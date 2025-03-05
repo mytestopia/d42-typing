@@ -49,7 +49,7 @@ def test_dict_key_any_same_type_pyi():
     module = load_module_from_string('test', CODE)
     schema_value = getattr(module, SCHEMA_NAME)
 
-    typed_module = modules.TypedModule('file_name')
+    typed_module = modules.TypedSchemaModule('file_name')
     typed_module.generate(SCHEMA_NAME, schema_value)
 
     assert typed_module.get_printable_content() == CODE_PYI
@@ -59,7 +59,7 @@ def test_dict_key_any_same_type_pyi_blahblah():
     module = load_module_from_string('test.module', CODE)
     schema_value = getattr(module, SCHEMA_NAME)
 
-    blahblha_module = modules.BlahBlahModule()
+    blahblha_module = modules.FakeModule()
     blahblha_module.generate('test.module', SCHEMA_NAME, schema_value)
 
     assert blahblha_module.get_printable_content() == CODE_BLAHBLAH_PYI

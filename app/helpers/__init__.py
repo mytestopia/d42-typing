@@ -1,4 +1,10 @@
-from .d42_ import copy_files_to_stubs, find_d42_package, list_init_files, replace_fake_import
+from .d42_ import (
+    copy_files_to_stubs,
+    find_d42_package,
+    list_init_files,
+    prepare_stubs_directory,
+    replace_fake_import,
+)
 from .files import walk
 from .files_as_modules import get_module_variables, import_module, load_module_from_string
 from .schemas import (
