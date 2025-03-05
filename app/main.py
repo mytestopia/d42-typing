@@ -6,7 +6,15 @@ import os
 import sys
 
 import app.modules as modules
-from app.helpers import get_module_variables, import_module, walk
+from app.helpers import (
+    copy_files_to_stubs,
+    find_d42_package,
+    get_module_variables,
+    import_module,
+    list_init_files,
+    replace_fake_import,
+    walk,
+)
 
 
 def main():
@@ -30,6 +38,16 @@ def main():
 
     cwd = os.getcwd()
     sys.path.append(cwd)
+
+    logging.info(f'.. create stubs directory and d42 dependency files')
+    d42_path = find_d42_package()
+    if not d42_path:
+        logging.error("Error: d42 package not found in site-packages")
+        sys.exit(1)
+
+    source_files = list_init_files(d42_path)
+    copy_files_to_stubs(d42_path, source_files)
+    replace_fake_import()
 
     file_count = 0
     schemas_count = 0

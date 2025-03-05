@@ -43,3 +43,6 @@ _tests
 __pychache__
 d42_typing.egg-info
 .pytest_cache
+stubs/
+build/
+dist/

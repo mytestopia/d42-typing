@@ -1,6 +1,7 @@
 import ast
 import logging
 
+
 class Import:
     def __init__(self, module, item):
         self.module = module

@@ -1,5 +1,6 @@
 import app.modules as modules
 from app.helpers import load_module_from_string
+
 CODE = '''\
 from d42 import schema
 TestSchema = schema.dict({

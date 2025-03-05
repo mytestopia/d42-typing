@@ -25,8 +25,7 @@ providing a more structured and robust type-checking mechanism.
 ## How it works
 - Generates Python type hints from d42 schemas.
 - Creates `.pyi` files for each schema file in a specified folder (or default).
-- Provides overloads for the `fake` method from d42 library.
-
+- Provides overloads for the `fake` method from d42 library in `stubs` folder.
 
 
 ## Example
@@ -120,6 +119,14 @@ To generate type hints, run the following command:
 d42-typing --path-to-schemas scenarios/schemas -a -v
 # d42-typing --help
 ```
+
+Configure mypy for correct type-checking:
+```
+[mypy]
+mypy_path = stubs
+```
+Don't forget to ignote `stubs/` dirrectory in `.gitignore`
+
 
 ### How to configurate type auto-generation in PyCharm
 
