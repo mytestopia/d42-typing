@@ -27,6 +27,9 @@ def main():
     ap.add_argument('-a', '--all',
                     help='generate overloads for all standard schema types',
                     action='store_true')
+    ap.add_argument('-s', '--stubs-folder', nargs='?', type=str,
+                    help='name of folder in current directory to create for stubs',
+                    default='_stubs')
 
     args = ap.parse_args()
     log_level = logging.DEBUG if args.verbose else logging.INFO
@@ -43,14 +46,14 @@ def main():
         logging.error("Error: d42 package not found in site-packages")
         sys.exit(1)
 
-    logging.debug(f'.. creating stubs directory')
-    prepare_stubs_directory(d42_path)
+    logging.debug(f'.. creating stubs directory {args.stubs_folder}')
+    prepare_stubs_directory(args.stubs_folder, d42_path)
 
     file_count = 0
     schemas_count = 0
     schemas_errors_count = 0
 
-    typed_fake_module = modules.FakeModule()
+    typed_fake_module = modules.FakeModule(args.stubs_folder)
 
     for file_name in walk(args.path_to_schemas):
         logging.debug(f'.. creating types for: {file_name}')

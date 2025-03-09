@@ -15,8 +15,8 @@ from app.types import (
 
 
 class FakeModule(Module):
-    def __init__(self):
-        super().__init__('stubs/d42/fake.py')
+    def __init__(self, stubs_folder: str):
+        super().__init__(f'{stubs_folder}/d42/fake.py')
         self.add_import('typing', 'overload')
         self.overloaded_fakes = []
 

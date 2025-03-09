@@ -26,7 +26,7 @@ def list_init_files(d42_path: str):
 
 def copy_files_to_stubs(source_root: str,
                         source_files: list[str],
-                        destination_root: str = "stubs"):
+                        destination_root: str):
     for source_path in source_files:
         if not os.path.exists(source_path):
             logging.info(f"Skipping {source_path}: file does not exist")
@@ -40,8 +40,8 @@ def copy_files_to_stubs(source_root: str,
         logging.debug(f"... copied {destination_path}")
 
 
-def replace_fake_import():
-    file_path = "stubs/d42/__init__.pyi"
+def replace_fake_import(stubs_folder: str):
+    file_path = f"{stubs_folder}/d42/__init__.pyi"
     with open(file_path, "r", encoding="utf-8") as file:
         lines = file.readlines()
 
@@ -53,7 +53,7 @@ def replace_fake_import():
                 file.write(line)
 
 
-def prepare_stubs_directory(d42_path: str):
+def prepare_stubs_directory(stubs_folder: str, d42_path: str):
     source_files = list_init_files(d42_path)
-    copy_files_to_stubs(d42_path, source_files)
-    replace_fake_import()
+    copy_files_to_stubs(d42_path, source_files, destination_root=stubs_folder)
+    replace_fake_import(stubs_folder)

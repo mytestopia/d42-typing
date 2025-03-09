@@ -3,7 +3,7 @@
 
 # d42-typing
 
-d42-typing is a Python package designed to enhance type-checking capabilities within the d42 ecosystem. 
+d42-typing is a Python package designed to enhance type-checking capabilities within the [d42](https://d42.sh/) ecosystem. 
 This package introduces generated type definitions that make it easier to work with D42 schemas by 
 providing a more structured and robust type-checking mechanism.
 
@@ -42,7 +42,7 @@ from ... import ...
 
 ValueSchema: Union[IntSchema, FloatSchema]
 
-# --- blahblah.pyi
+# --- _stubs/d42/fake.pyi
 from ... import ...
 
 @overload
@@ -90,7 +90,7 @@ class UserSchema(metaclass=_D42MetaUserSchema):
         name: StrSchema.type
         phone: Union[StrSchema.type, NoneSchema.type]
 
-# --- blahblah.pyi
+# --- _stubs/d42/fake.pyi
 from typing import overload
 from typing import Type
 from _tests.schemas.test import UserSchema
@@ -116,16 +116,16 @@ pip install d42-typing
 To generate type hints, run the following command:
 
 ```sh
-d42-typing --path-to-schemas scenarios/schemas -a -v
+d42-typing --path-to-schemas scenarios/schemas -a -v -s _stubs
 # d42-typing --help
 ```
 
 Configure mypy for correct type-checking:
 ```
 [mypy]
-mypy_path = stubs
+mypy_path = _stubs
 ```
-Don't forget to ignote `stubs/` dirrectory in `.gitignore`
+Don't forget to ignote `_stubs/` dirrectory in `.gitignore`
 
 
 ### How to configurate type auto-generation in PyCharm
