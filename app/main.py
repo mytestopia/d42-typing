@@ -30,6 +30,9 @@ def main():
     ap.add_argument('-s', '--stubs-folder', nargs='?', type=str,
                     help='name of folder in current directory to create for stubs',
                     default='_stubs')
+    ap.add_argument('--general-fake-stub', action='store_true',
+                    help='generate general stub for fake method',
+                    default=False)
 
     args = ap.parse_args()
     log_level = logging.DEBUG if args.verbose else logging.INFO
@@ -53,7 +56,8 @@ def main():
     schemas_count = 0
     schemas_errors_count = 0
 
-    typed_fake_module = modules.FakeModule(args.stubs_folder)
+    typed_fake_module = modules.FakeModule(args.stubs_folder) \
+        if not args.general_fake_stub else modules.FakeModuleGeneral(args.stubs_folder)
 
     for file_name in walk(args.path_to_schemas):
         logging.debug(f'.. creating types for: {file_name}')
@@ -68,7 +72,8 @@ def main():
 
             try:
                 typed_schema_module.generate(name, value)
-                typed_fake_module.generate(file_name, name, value)
+                if not args.general_fake_stub:
+                    typed_fake_module.generate(file_name, name, value)
                 schemas_count += 1
             except Exception:
                 logging.error(f'Failed typing schema {name}, skipping')
@@ -77,10 +82,10 @@ def main():
         typed_schema_module.print()
         file_count += 1
 
-    if is_add_all:
-        logging.debug('.. creating standard types overload')
-        typed_fake_module.generate_standard_types()
-
+    if not args.general_fake_stub:
+        if is_add_all:
+            logging.debug('.. creating standard types overload')
+            typed_fake_module.generate_standard_types()
     typed_fake_module.print()
 
     logging.info(
