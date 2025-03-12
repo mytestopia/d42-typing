@@ -113,19 +113,20 @@ To install `d42-typing`, use the following command:
 pip install d42-typing
 ```
 
-To generate type hints, run the following command:
+1. Generate type hints, run the following command:
 
 ```sh
 d42-typing --path-to-schemas scenarios/schemas -a -v -s _stubs
 # d42-typing --help
 ```
 
-Configure mypy for correct type-checking:
+2. Configure mypy for correct type-checking:
 ```
 [mypy]
 mypy_path = _stubs
 ```
-Don't forget to ignote `_stubs/` dirrectory in `.gitignore`
+3. Add `_stubs/` directory in `.gitignore`.
+4. Mark `_stubs/` directory as `Sources Root` in PyCharm.
 
 
 ### How to configurate type auto-generation in PyCharm
