@@ -3,7 +3,7 @@ from app.helpers import load_module_from_string
 
 CODE = '''\
 from d42 import schema
-from jj_district42 import HistoryItemSchema, schema_history_request
+from jj_d42 import HistoryItemSchema, schema_history_request
 
 TestHistorySchema = HistoryItemSchema + schema.dict({
     "request": schema_history_request
@@ -16,7 +16,7 @@ from typing import Literal
 from typing import TypedDict
 from typing import Any
 from typing import List
-from district42.types import DateTimeSchema
+from d42.declaration.types import DateTimeSchema
 
 class _D42MetaTestHistorySchema(type):
 
@@ -68,7 +68,7 @@ def test_jj_history_pyi():
     schema_name = 'TestHistorySchema'
     schema_description = getattr(module, schema_name)
 
-    typed_module = modules.TypedModule('file_name')
+    typed_module = modules.TypedSchemaModule('file_name')
     typed_module.generate(schema_name, schema_description)
 
     assert typed_module.get_printable_content() == CODE_PYI
@@ -80,7 +80,7 @@ def test_jj_history_pyi_blahblah():
     schema_name = 'TestHistorySchema'
     schema_description = getattr(module, schema_name)
 
-    blahblah_module = modules.BlahBlahModule()
+    blahblah_module = modules.FakeModule()
     blahblah_module.generate('test_file_name', schema_name, schema_description)
 
     assert blahblah_module.get_printable_content() == CODE_BLAHBLAH_PYI

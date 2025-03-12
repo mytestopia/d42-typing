@@ -39,7 +39,7 @@ class AnyTyping(Typing):
                 annotations.append(ast_generate.annotated_assign_union(self.name, types_in_any))
                 return annotations, imports
 
-        imports.append(Import('district42.types', 'AnySchema'))
+        imports.append(Import('d42.declaration.types', 'AnySchema'))
         annotations.append(ast_generate.annotated_assign(self.name, 'AnySchema'))
         return annotations, imports
 

@@ -3,7 +3,7 @@
 
 # d42-typing
 
-d42-typing is a Python package designed to enhance type-checking capabilities within the d42 ecosystem. 
+d42-typing is a Python package designed to enhance type-checking capabilities within the [d42](https://d42.sh/) ecosystem. 
 This package introduces generated type definitions that make it easier to work with D42 schemas by 
 providing a more structured and robust type-checking mechanism.
 
@@ -25,8 +25,7 @@ providing a more structured and robust type-checking mechanism.
 ## How it works
 - Generates Python type hints from d42 schemas.
 - Creates `.pyi` files for each schema file in a specified folder (or default).
-- Provides overloads for the `fake` method from d42 library.
-
+- Provides overloads for the `fake` method from d42 library in `stubs` folder.
 
 
 ## Example
@@ -43,7 +42,7 @@ from ... import ...
 
 ValueSchema: Union[IntSchema, FloatSchema]
 
-# --- blahblah.pyi
+# --- _stubs/d42/fake.pyi
 from ... import ...
 
 @overload
@@ -91,7 +90,7 @@ class UserSchema(metaclass=_D42MetaUserSchema):
         name: StrSchema.type
         phone: Union[StrSchema.type, NoneSchema.type]
 
-# --- blahblah.pyi
+# --- _stubs/d42/fake.pyi
 from typing import overload
 from typing import Type
 from _tests.schemas.test import UserSchema
@@ -114,12 +113,21 @@ To install `d42-typing`, use the following command:
 pip install d42-typing
 ```
 
-To generate type hints, run the following command:
+1. Generate type hints, run the following command:
 
 ```sh
-d42-typing --path-to-schemas scenarios/schemas -a -v
+d42-typing --path-to-schemas scenarios/schemas -a -v -s _stubs
 # d42-typing --help
 ```
+
+2. Configure mypy for correct type-checking:
+```
+[mypy]
+mypy_path = _stubs
+```
+3. Add `_stubs/` directory in `.gitignore`.
+4. Mark `_stubs/` directory as `Sources Root` in PyCharm.
+
 
 ### How to configurate type auto-generation in PyCharm
 

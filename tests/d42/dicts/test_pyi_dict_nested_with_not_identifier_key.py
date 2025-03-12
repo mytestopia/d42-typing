@@ -50,7 +50,7 @@ def test_dict_nested_empty_dict_key_pyi():
 
     schema_value = getattr(module, SCHEMA_NAME)
 
-    typed_module = modules.TypedModule('file_name')
+    typed_module = modules.TypedSchemaModule('file_name')
     typed_module.generate(SCHEMA_NAME, schema_value)
 
     assert typed_module.get_printable_content() == CODE_PYI
@@ -61,7 +61,7 @@ def test_dict_nested_empty_dict_key_pyi_blahblah():
 
     schema_value = getattr(module, SCHEMA_NAME)
 
-    blahblah_module = modules.BlahBlahModule()
+    blahblah_module = modules.FakeModule()
     blahblah_module.generate('test.module', SCHEMA_NAME, schema_value)
 
     assert blahblah_module.get_printable_content() == CODE_BLAHBLAH_PYI

@@ -16,7 +16,7 @@ from ast_generate import annotated_assign
 from .module import Module
 
 
-class TypedModule(Module):
+class TypedSchemaModule(Module):
 
     def _add_typing(self, item):
         self.typed_items.append(item)

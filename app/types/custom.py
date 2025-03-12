@@ -3,7 +3,7 @@ import typing
 from typing import Tuple
 
 from d42.custom_type import CustomSchema
-from district42 import Schema
+from d42.declaration import Schema
 
 import ast_generate
 from app.helpers import get_module_to_import_from

@@ -1,5 +1,5 @@
-from d42 import schema
 from d42.custom_type import Schema
+from d42.declaration import schema
 
 from app.modules.module import Module
 from app.types import (
@@ -14,9 +14,9 @@ from app.types import (
 )
 
 
-class BlahBlahModule(Module):
-    def __init__(self):
-        super().__init__('blahblah.py')
+class FakeModule(Module):
+    def __init__(self, stubs_folder: str):
+        super().__init__(f'{stubs_folder}/d42/fake.py')
         self.add_import('typing', 'overload')
         self.overloaded_fakes = []
 
